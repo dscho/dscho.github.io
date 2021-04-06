@@ -2,13 +2,20 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Git(Hub) workshop for LOCI</title>
+
+		<meta name="description" content="How to use Git and GitHub effectively">
+		<meta name="author" content="Johannes Koenig-Schindelin">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/white.css" id="theme">
+		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
@@ -16,25 +23,480 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section><img src=img/fascination.png /></section>
-				<section><img src=img/fascina.jpg style="transform: translate(0,-150px); scale: 90%" /></section>
-				<section><img src=img/thinking-fast-and-slow.jpg style="transform: translate(0,-150px); scale: 80%" /></section>
-				<section><img src=img/baseball-bat-ball-transparent.png /></section>
-				<section><img src=img/munker-illusion-with-spheres.jpg /></section>
-				<section><img src=img/pythagoras-explained.gif style="transform: translate(0, 50px); scale: 300%" /></section>
-				<section><img src=img/drosophila.jpg /></section>
-				<section><img src=img/drosophila-phylogeny.jpg style="transform: translate(0,-20px); scale: 90%" /></section>
-				<section><img src=img/MikeTheHeadlessChicken.jpg style="scale: 180%" /></section>
-				<section><img src=img/neons.jpg /></section>
-				<section><img src=img/the-beef-with-the-paris-agreement.png style="transform: translate(0,-220px); scale: 70%" /></section>
-				<section><img src=img/highlands.jpg /></section>
-				<section><img src=img/devils-lake-wisconsin-marina-karsten.jpg /></section>
-				<section><img src=img/the-dawn-wall.jpg /></section>
-				<section><img src=img/dawn-wall-jorgeson.png /></section>
-				<section><img src=img/siebengebirge.jpg /></section>
-				<section><img src=img/siebengebirge-2.jpg style="transform: translate(0,-520px); scale: 55%" /></section>
-				<section><img src=img/waves-crashing.jpg style="transform: translate(0, -50px); scale: 140%" /></section>
-				<section><img src=img/pema-chodron.jpg style="scale: 140%" /></section>
+				<section>
+					<div style="float: left;"><img src="images/git.png" /> </div>
+					<h1>Using Git and GitHub</h1>
+					<h3>Like, effectively</h3>
+					<p>
+						<small>Curtis Rueden, Mark Hiner &amp; Johannes Koenig-Schindelin</small>
+					</p>
+				</section>
+
+				<section>
+					<section>
+						<h3>Prelude:<br />Why use a version control system?</h3>
+						<p style="font-family: Arial; font-size: 250pt; color: #8080ff">?</p>
+					</section>
+
+					<section>
+						<h3>Common scientific development workflow</h3>
+						<ul>
+							<li class="fragment">Email</li>
+							<li class="fragment">Hack some code</li>
+							<li class="fragment">Meeting</li>
+							<li class="fragment">Hack some code</li>
+							<li class="fragment">Student needs something</li>
+							<li class="fragment">Hack some code</li>
+							<li class="fragment">It is broken?</li>
+							<li class="fragment">WTF?</li>
+							<li class="fragment">???</li>
+							<li class="fragment">Boohooooo!</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>Common scientific development workflow, version II</h3>
+						<ul>
+							<li class="fragment">Coffee</li>
+							<li class="fragment">Make a change in the code</li>
+							<li class="fragment">Test</li>
+							<li class="fragment">Make another change in the code</li>
+							<li class="fragment">Test</li>
+							<li class="fragment">Send the code to a collaborator</li>
+							<li class="fragment">It no longer works!</li>
+							<li class="fragment">WTF?</li>
+							<li class="fragment">???</li>
+							<li class="fragment">Boohooooo!</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>Less common scientific development workflow</h3>
+						<ul>
+							<li class="fragment">Make changes in the code</li>
+							<li class="fragment">It works, great!</li>
+							<li class="fragment">Collaborator made different changes in the code!</li>
+							<li class="fragment">How to reconcile?</li>
+							<li class="fragment">???</li>
+							<li class="fragment">Boohooooo!</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>Most common development workflow</h3>
+						<ul>
+							<li class="fragment">Provide code to collaborator</li>
+							<li class="fragment">Six months later...</li>
+							<li class="fragment">Get mail saying: your code is broken</li>
+							<li class="fragment">Test verifies: is broken</li>
+							<li class="fragment">Used to work!</li>
+							<li class="fragment">Where is the working version?</li>
+							<li class="fragment">Aargh!</li>
+							<li class="fragment">Boohooooo!</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h1>Overview</h1>
+					<ul>
+						<li class="fragment">Getting started</li>
+						<li class="fragment">Diffs</li>
+						<li class="fragment">Commits</li>
+						<li class="fragment">Commit history</li>
+						<li class="fragment">Merges</li>
+						<li class="fragment">Some theory</li>
+						<li class="fragment">Topic branches</li>
+						<li class="fragment">Bisecting</li>
+						<li class="fragment">Forking</li>
+						<li class="fragment">Pull Requests</li>
+						<li class="fragment">GitHub tricks</li>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h3>Getting started</h3>
+						<a href="http://git-scm.com/">http://git-scm.com/</a>
+					</section>
+
+					<section>
+						<h3>Cloning the <i>loci-scripts</i> repository</h3>
+						<pre>
+						<code lang="bash" data-trim contenteditable>
+$ git clone https://github.com/uw-loci/loci-scripts
+Cloning into 'loci-scripts'...
+remote: Reusing existing pack: 27, done.
+remote: Total 27 (delta 0), reused 0 (delta 0)
+Unpacking objects: 100% (27/27), done.
+Checking connectivity... done.
+						</code>
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Diffs</h3>
+						<pre>
+						<code lang="diff" data-trim contenteditable>
+diff --git a/anthem.txt b/anthem.txt
+new file mode 100644
+index 0000000..46ea613
+--- /dev/null
++++ b/anthem.txt
+@@ -0,0 +1,9 @@
++Lord, grant that Marshal Wade
++May, by thy mighty aid,
++Victory bring!
++
++May he sedition hush
++And, like a torrent, rush
++Rebellious Scots to crush.
++
++God save the King!
+						</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Diffs, part II</h3>
+						<pre>
+						<code lang="diff" data-trim contenteditable>
+diff --git a/anthem.txt b/anthem.txt
+index 46ea613..d920528 100644
+--- a/anthem.txt
++++ b/anthem.txt
+@@ -7,3 +7,5 @@ And, like a torrent, rush
+ Rebellious Scots to crush.
+ 
+ God save the King!
++
++(melody: My country 'tis of thee)
+						</code>
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Commits</h3>
+						<pre>
+						<code lang="bash" data-trim contenteditable>
+$ git status
+On branch master
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+
+	hello.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+$ git add hello.txt
+
+$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD &lt;file&gt;..." to unstage)
+
+	new file:   hello.txt
+						</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Commit messages</h3>
+						<pre>
+Short summary (50 characters or less)
+
+More detailed explanatory text ("commit message body") after an empty
+line, with additional information that cannot be inferred easily from
+the diff, e.g. what bug this solves, who reported the issue.
+
+Wrap it to 72 characters per line.
+
+Write your commit message in the imperative: "Fix bug" and not "Fixed
+bug" or "Fixes bug."  This convention matches up with commit messages
+generated by commands like git merge and git revert.
+
+Separate paragraphs with blank lines.
+
+- Bullet points are okay, too
+
+- Typically a hyphen or asterisk is used for the bullet, preceded by a
+  single space, with blank lines in between, but conventions vary here
+
+- Use a hanging indent
+						</pre>
+						<div style="font-family: Arial;
+	font-size: 16pt; float: right;">Source: <a href="http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html</a></div>
+					</section>
+
+					<section>
+						<h3>A commit reflects a <i>revision</i></h3>
+						<p class="fragment">... that is, a <u>working</u> revision</p>
+						<p class="fragment">... i.e. not, <b>never <span style="color: red;">ever</span></b> <tt>Many changes...</tt>!!! Good example for a bad example: <a href="https://github.com/imagej/imagej/commit/ad125915d">https://github.com/imagej/imagej/commit/ad125915d</a></p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Commit history</h3>
+						<img src="images/git-history.png" />
+					</section>
+
+					<section>
+						<h3>"git log"</h3>
+						<ul>
+						<li><pre>git log</pre></li>
+						<li class="fragment"><pre>git log -p</pre></li>
+						<li class="fragment"><pre>git log origin/master</pre></li>
+						<li class="fragment"><pre>git log bin/</pre></li>
+						<li class="fragment"><pre>git log -SXmx</pre></li>
+						<li class="fragment"><pre>git log --author=Curtis</pre></li>
+						<li class="fragment"><pre>git log -3</pre></li>
+						<li class="fragment"><pre>git log HEAD^..HEAD^2</pre></li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Merges</h3>
+						<pre>
+						<code lang="bash" data-trim contenteditable>
+$ git merge origin/tutorial
+Auto-merging bin/prairie-backup.sh
+CONFLICT (content): Merge conflict in bin/prairie-backup.sh
+Recorded preimage for 'bin/prairie-backup.sh'
+Automatic merge failed; fix conflicts and then commit the result.
+
+$ git status
+On branch master
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+
+Unmerged paths:
+  (use "git add &lt;file&gt;..." to mark resolution)
+
+	both modified:   bin/prairie-backup.sh
+
+no changes added to commit (use "git add" and/or "git commit -a")
+						</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Merge conflicts</h3>
+						<pre>
+  # compress Prairie dataset to ZIP file
+  echo
+  echo "Compressing '$datasetFullName' to ZIP..."
+  if [ -e "$zipPath" ];
+  then
+    # ZIP file already exists; skip this dataset
+    echo "ZIP file already exists. Moving on..."
+    continue
+  fi
+<span style="color: #ffc080;">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+  # make the directory
+  mkdir -p "${zipDir:-1}"
+<span style="color: #8080ff;">=======</span>
+  mkdir -p "$zipDir"
+<span style="color: #ff80ff;">&gt;&gt;&gt;&gt;&gt;&gt;&gt; master</span>
+  (cd "$datasetBase" && zip -r9 "$zipPath" "$datasetName" > /dev/null)
+
+  # delete uncompressed Prairie dataset
+  echo
+  echo "Deleting '$datasetFullName'..."
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Some theory</h3>
+					</section>
+
+					<section>
+						<h3>"content-addressable database"</h3>
+						<table style="font-size: 20pt;" border=0>
+							<td><pre style="font-size: 20pt;">Mahna&nbsp;mahna<br />do&nbsp;dooh&nbsp;bee&nbsp;doo&nbsp;doo</pre></td>
+							<td class="fragment" valign=center>=&gt;</span>
+							<td class="fragment" valign=center>a2a100025d1516bab79163fe862475d7bd010ef8</span>
+						</table>
+						<div class="fragment"><i>Everything</i> is a content-addressable object, identified by a <i>hash</i> of itself</div>
+					</section>
+
+					<section>
+						<h3><i>Everything</i>&nbsp; is an object</h3>
+						<ul>
+						<li class="fragment">a file is an object</li>
+						<li class="fragment">a directory is a list of files, i.e. an object</li>
+						<li class="fragment">a commit is a top-level directory and a list of parent commits, i.e. an object</li>
+						</ul>
+						<span class="fragment"><br />Surprising fact: commits do <i>not</i> store changes!</span>
+					</section>
+
+					<section>
+						<h3><i>Everything?</i></h3>
+						Not quite: HEAD is mutable. Mutable things cannot be objects.
+					</section>
+
+					<section>
+						<h3>The commit graph</h3>
+						<img src="images/commit-graph.svg" />
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Topic branches</h3>
+						<pre>
+						<code lang="bash" data-trim contenteditable>
+$ git checkout -b my-cool-topic origin/master
+Switched to a new branch 'my-cool-topic'
+
+...
+$ git push origin HEAD
+Counting objects: 14, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (8/8), 913 bytes | 0 bytes/s, done.
+Total 8 (delta 2), reused 0 (delta 0)
+To origin
+ * [new branch]      HEAD -&gt; my-cool-topic
+						</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Rewriting branches</h3>
+						<pre>
+						<code lang="bash" data-trim contenteditable>
+$ git rebase -i origin/master
+Successfully rebased and updated refs/heads/master.
+
+$ git push origin +HEAD
+Counting objects: 17, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (12/12), done.
+Writing objects: 100% (17/17), 12.75 KiB | 0 bytes/s, done.
+Total 17 (delta 3), reused 0 (delta 0)
+To origin
+ + 597967a...deadbeef HEAD^ -&gt; master (forced update)
+						</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>"Interactive rebase"</h3>
+						<pre>
+<span style="color: #aca100;">pick</span> <span style="color: #55adbe;">c5ad950</span> <span style="color: #bf08d2;">Insert a comment</span>
+<span style="color: #aca100;">pick</span> <span style="color: #55adbe;">1253d09</span> <span style="color: #bf08d2;">Fix typo</span>
+<span style="color: #aca100;">pick</span> <span style="color: #55adbe;">dbf553c</span> <span style="color: #bf08d2;">Add support for XYZ</span>
+
+<span style="color: #55adbe;"># Rebase 152ebdc..dbf553c onto 152ebdc
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like "squash", but discard this commit's log message
+#  x, exec = run command (the rest of the line) using shell</span>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Fixup commits</h3>
+						<pre>
+						<code lang="bash" data-trim contenteditable>
+$ git add bin/
+
+$ git commit --fixup HEAD^^
+[master b6c875c] fixup! Insert a comment
+ 1 file changed, 1 insertion(+)
+						</code>
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<h3>Bisecting</h3>
+					<pre>
+					<code lang="bash" data-trim contenteditable>
+$ git bisect start
+
+$ git bisect bad HEAD
+
+$ git bisect good HEAD@{1.day.ago}
+
+... test ...
+$ git bisect good
+
+... test ...
+$ git bisect bad
+
+... rinse and repeat ...
+... find out bad commit ...
+$ git bisect reset
+					</code>
+					</pre>
+				</section>
+
+				<section>
+					<section>
+						<h3>Forking</h3>
+						<img src="images/github-fork.png" />
+					</section>
+
+					<section>
+						<h3>Network</h3>
+						<img src="images/github-network.png" />
+					</section>
+				</section>
+
+				<section>
+					<h3>Pull Requests</h3>
+					<img src="images/i-can-haz-pull-request.png" />
+				</section>
+
+				<section>
+					<section>
+						<h3>GitHub tricks</h3>
+						<ul>
+							<li>
+								Looking at individual commits:<br />
+								<a href="https://github.com/uw-loci/loci-scripts/commit/HEAD^">https://github.com/uw-loci/loci-scripts/commit/HEAD^</a>
+							</li>
+							<li class="fragment">
+								Looking at topic branches:<br />
+								<a href="https://github.com/uw-loci/loci-scripts/compare/master...tutorial">https://github.com/uw-loci/loci-scripts/compare/master...tutorial</a>
+							</li>
+							<li class="fragment">'t'</li>
+							<li class="fragment">Click on line numbers</li>
+							<li class="fragment">'y'</li>
+							<li class="fragment">'?'</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>README.md</h3>
+						<a href="https://help.github.com/articles/github-flavored-markdown">https://help.github.com/articles/github-flavored-markdown</a>
+					</section>
+
+					<section>
+						<h3><i>gh-pages</i></h3>
+						See e.g. <a href="http://scijava.github.io/">http://scijava.github.io/</a>, backed by <a href="https://github.com/scijava/scijava.github.com">https://github.com/scijava/scijava.github.com</a>.
+					</section>
+				</section>
+
+				<section>
+					<h1>Thank you!</h1>
+					<p>ImageJ2 team:</p>
+					<p class="gallery"><img src="images/kevin-eliceiri.jpg" /><img src="images/curtis.jpg" /><img src="images/dschos-pony.jpg" /><img src="images/mark-hiner.jpg" /></p>
+				</section>
 			</div>
 		</div>
 
@@ -42,16 +504,16 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
 			// - https://revealjs.com/config/
 			Reveal.initialize({
-				width: 960, height: 700, disableLayout: false,
 				hash: true,
 
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom ]
 			});
 		</script>
 	</body>
