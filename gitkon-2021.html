@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Git for Windows & cross-platform collaboration</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+		<style>
+			:root {
+				--r-main-color: #ceced8;
+				--r-heading-color: #17cfe2;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-background-image="img/gitkon-2021-background.svg">
+					<h1>Git for Windows</h1>
+					<h3 class="fragment">and The Challenges of Cross-Platform Collaboration</h3>
+					<h4 class="fragment" style="font-size: 50%;">(the name of my next Rock band)</h4>
+				</section>
+				<section data-background-image="img/gitkon-2021-background.svg">
+					<h3>Some history</h3>
+					<ul>
+						<li>Git was born &amp; raised on Linux</li>
+						<li>Git on IRIX...</li>
+						<li><code>git svn</code> via Cygwin is... slow</li>
+						<li>"Side" project: Git for Windows, natively</li>
+						<ul>
+							<li>MSys/MINGW</li>
+							<li>Left unfinished, handed off</li>
+						</ul>
+					</ul>
+				</section>
+				<section data-background-image="img/gitkon-2021-background.svg">
+					<h3>Git for Windows</h3>
+					<ul>
+						<li>½ a year later: works on Windows</li>
+						<li>Ended up maintaining it myself</li>
+						<li>Microsoft pivots to Git</li>
+						<ul>
+							<li>Git for Windows v2.x</li>
+							<li>No more previews (but still open source)</li>
+							<li>MSYS2</li>
+							<li>64-bit</li>
+							<li>Unicode</li>
+							<li>MinTTY</li>
+						</ul>
+					</ul>
+				</section>
+				<section data-background-image="img/gitkon-2021-background.svg">
+					<h3>Challenges</h3>
+					<ul>
+						<li>POSIX? What's POSIX?</li>
+						<li>We use processes! Why would we use threads?</li>
+						<li>Terminal. What Terminal? CMD? uhm...</li>
+						<li>Line endings</li>
+						<li>Symbolic links/reparse points</li>
+						<li>Unix paths vs Windows paths ("pathconv")</li>
+						<li>4GB "problem"</li>
+					</ul>
+				</section>
+				<section data-background-image="img/gitkon-2021-background.svg">
+					<h3>More challenges</h3>
+					<ul>
+						<li>Why doesn't anybody fix this for me?</li>
+						<li>"Those Linux boys" vs "Microsoft is evil"</li>
+						<li>Shell scripts. Why doesn't everybody love them?</li>
+						<li>Scripting is fast. What do you mean by "it's not"?</li>
+						<li>Locales ("why don't you have UTF-8 encoding?")</li>
+						<li>Why even bother supporting Windows?</li>
+						<li>"I don't have Windows and cannot test this"</li>
+					</ul>
+				</section>
+				<section data-background-image="img/gitkon-2021-background.svg">
+					<h3><small>(Cross-platform)</small><br />collaboration is <i>challenging</i>!</h3>
+					<h4 class="fragment" style="font-size: 75%;">... but ultimately worth it</h4>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
