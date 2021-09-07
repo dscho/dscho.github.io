@@ -102,7 +102,9 @@ export default class SlideContent {
 
 				// Images
 				if( backgroundImage ) {
-					backgroundContent.style.backgroundImage = 'url('+ encodeURI( backgroundImage ) +')';
+					backgroundContent.style.backgroundImage = backgroundImage.split( ',' ).map( background => {
+						return `url(${encodeURI(background.trim())})`;
+					}).join( ',' );
 				}
 				// Videos
 				else if ( backgroundVideo && !this.Reveal.isSpeakerNotes() ) {
