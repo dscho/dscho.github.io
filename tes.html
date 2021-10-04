@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Open Source in Science: Challenges and Opportunities</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+		<style>
+			:root {
+				--r-background-color: #00727d;
+				--r-main-color: #ceced8;
+				--r-heading-color: #ffffff;
+			}
+
+			.doi {
+				color: red;
+				font-size: 50%;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="position: absolute; z-index: -1; margin-left: 0px; margin-top: 0px; top: -25%; width: 100%; opacity: 1; display: block;">
+			<img src="images/Weltkugel.png" class="ls-layer" alt="" loading="lazy" style="width: 100%; opacity: 0.2; margin: 0px; z-index: auto; filter: blur(0.1em) brightness(70%);" />
+		</div>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Open Source in Science</h1>
+					<h2>Challenges and Opportunities</h2>
+				</section>
+				<section>
+					<h1>Personal background</h1>
+					<ul>
+						<li>studied mathematics, genetics, psychology,</li>
+						<li>got involved in the <a href="https://git-scm.com/">Git</a> project,</li>
+						<li>started and maintained the <a href="https://fiji.sc/">Fiji</a> project, an extensible scientific image processing framework,</li>
+						<li>now maintaining <a href="https://gitforwindows.org/">Git for Windows</a></li>
+					</ul>
+				</section>
+				<section>
+					<h1>One Day in the Life of an Open Source maintainer</h1>
+					<ul>
+						<li>Read emails. Lots of 'em. Field usage questions.</li>
+						<li>Take care of contributions, vulnerabilities, sometimes new features</li>
+						<li>Mentor engineers</li>
+						<li>etc</li>
+					</ul>
+				</section>
+				<section>
+					<h1>Open Source and Science, a natural match</h1>
+					It's all about sharing knowledge
+				</section>
+				<section>
+					<h1>Opportunity: impact</h1>
+					<ul>
+						<li>Exhibit A: Fiji, cited <a href="https://scholar.google.com/scholar?q=fiji+schindelin">31k+ times and counting</a><br /><a class="doi" href="https://doi.org/10.1038/nmeth.2019">https://doi.org/10.1038/nmeth.2019</a></li>
+						<li>Exhibit B: <a href="https://matplotlib.org/">Matplotlib</a>, cited <a href="https://scholar.google.com/scholar?q=matplotlib">almost 16k times</a><br /><a class="doi" href="https://doi.org/10.1109/MCSE.2007.55">https://doi.org/10.1109/MCSE.2007.55</a></li>
+					</ul>
+				</section>
+				<section>
+					<h1>Primary challenge: funding</h1>
+					<div class="fragment">
+						Everybody loves free stuff, nobody likes to pay for it.
+						<div class="fragment">... unless they can slap their name on it?</div>
+						<div class="fragment">e.g. <a href="https://chanzuckerberg.com/blog/importance-open-source-science-software/">Chan Zuckerberg Initiative</a></div>
+						<div class="fragment">e.g. Fiji vs DFG, Fiji vs MotionTracker, Fiji vs Icy</div>
+					</div>
+				</section>
+				<section>
+					<h1>Challenge: publishing</h1>
+					Originally: nobody would accept software papers. Now: <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008390">high standards</a> (industry-grade code quality expected from non-CS researchers)
+				</section>
+				<section>
+					<h1>Challenge: best practices</h1>
+					<ul>
+						<li>Code Comments</li>
+						<li>Object-Oriented Design, Functional Programming</li>
+						<li>Regression Testing (mock objects)</li>
+						<li>Continuous Integration</li>
+						<li>etc</li>
+					</ul>
+				</section>
+				<section>
+					<h1>Challenge: maintenance</h1>
+					<ul>
+						<li>Tending to the bug tracker,</li>
+						<li>answering questions about usage,</li>
+						<li>helping contributors getting started,</li>
+						<li>etc</li>
+					</ul>
+					<p>
+						<a href="https://www.nature.com/articles/d41586-019-02046-0">How to support open-source software and stay sane</a> <a class="doi" href="https://doi.org/10.1038/d41586-019-02046-0">https://doi.org/10.1038/d41586-019-02046-0</a>
+					</p>
+				</section>
+				<section>
+					<h1>Challenge: community building</h1>
+					<a href="https://cmustrudel.github.io/papers/raman20toxicity.pdf">Stress and Burnout in Open Source</a><br /><a class="doi" href="https://doi.org/10.1145/3377816.3381732">https://doi.org/10.1145/3377816.3381732</a>
+				</section>
+				<section>
+					<h1>Opportunity: stand on giants' shoulders</h1>
+					<li><a href="https://www.researchgate.net/topic/Open-Source-Scientific-Software/publications">https://www.researchgate.net/topic/Open-Source-Scientific-Software/publications</a></li>
+					<li><a href="https://github.com/topics/science">https://github.com/topics/science</a></li>
+				</section>
+				<section>
+					<h1>Questions?</h1>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				slideNumber: "c/t",
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
