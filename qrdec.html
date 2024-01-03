@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>QR Code Scanner</title>
+    <script type="text/javascript" src="./instascan.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="preview-container">
+        <video id="preview"></video>
+	<script type="text/javascript">
+	  let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+	  scanner.addListener('scan', function (content) {
+	    const m = content.match(/^https?:\/\/instant.io\/#([0-9a-f]*)$/);
+	    if (m) {
+	      const text = `webtorrent-hybrid download ${m[1]}`;
+	      console.log(text);
+	      const e = document.createElement('pre');
+	      e.innerHTML = text;
+	      document.getElementById('app').appendChild(e);
+	      return;
+	    } else {
+	      document.getElementById('result').innerHTML = content;
+	    }
+
+            console.log(content);
+	    if (content.match(/^https?:\/\//)) {
+	      window.location = content;
+	    }
+          });
+          Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 1) {
+              scanner.start(cameras[1]);
+	    } else if (cameras.length > 0) {
+              scanner.start(cameras[0]);
+            } else {
+              console.error('No cameras found.');
+            }
+          }).catch(function (e) {
+            console.error(e);
+          });
+        </script>
+      </div>
+    </div>
+    <div id="result" />
+  </body>
+</html>

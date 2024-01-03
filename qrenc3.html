@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>QR Encoder</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<script type='text/javascript' src='qrenc3.js'></script>
+	</head>
+	<body>
+		<h1>QR Encoder</h1>
+		<form>
+			<label for='URL'>URL:</label>
+			<input type='text' style='width: 60em;' id='url' onchange='updateQR();' oninput='updateQR();' />
+		</form>
+		<canvas id='output' width='512' height='512' style='background-color: #ffffff;'></canvas>
+		<script type='text/javascript'>
+			var canvas = document.getElementById('output');
+			var url = document.getElementById('url');
+			var updateQR = function() {
+				paintQR(canvas, url.value, 1);
+			}
+
+			var queryString = location.search.replace(/^\?/, '');
+			if (queryString != '') {
+				url.value = queryString;
+				updateQR();
+			}
+
+			url.focus();
+		</script>
+	</body>
+</html>
