@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -7,36 +7,731 @@
 			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		/>
 
-		<title>reveal.js</title>
+		<title>Fiji won't quit!</title>
 
 		<link rel="stylesheet" href="dist/reset.css" />
 		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/black.css" />
+		<link rel="stylesheet" href="dist/theme/white.css" />
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+		<style>
+			:root {
+				--paper-title-veil: rgba(0, 0, 0, 0.18);
+			}
+
+			html,
+			body,
+			.reveal {
+				background: #fff;
+			}
+
+			.reveal .slides {
+				text-align: left;
+			}
+
+			.reveal .slides section.paper-title-slide {
+				height: 100%;
+				padding: 0;
+				overflow: hidden;
+			}
+
+			.paper-screenshot,
+			.paper-title-veil,
+			.paper-title-source-frame,
+			.paper-title-raster {
+				position: absolute;
+				display: block;
+				max-width: none;
+				max-height: none;
+				margin: 0;
+				pointer-events: none;
+			}
+
+			.paper-screenshot {
+				left: 0;
+				top: 88px;
+				width: 100%;
+				height: calc(100% - 88px);
+				object-fit: contain;
+				z-index: 1;
+			}
+
+			.reveal .paper-screenshot {
+				max-width: none;
+				max-height: none;
+				margin: 0;
+			}
+
+			.paper-title-veil {
+				background: var(--paper-title-veil);
+				opacity: 0;
+				z-index: 2;
+				will-change: opacity;
+			}
+
+			.paper-title-source-frame {
+				overflow: hidden;
+				opacity: 0;
+				z-index: 3;
+				transform-origin: 0 0;
+				will-change: opacity, transform;
+			}
+
+			.paper-title-raster {
+				inset: 0;
+				width: 100%;
+				height: 100%;
+			}
+
+		</style>
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section
+					class="paper-title-slide"
+					data-title-crop="21,275,53,39"
+				>
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 17-34-56 Fiji an open-source platform for biological-image analysis Nature Methods.png"
+						alt="Fiji: an open-source platform for biological-image analysis"
+						doi="10.1038/nmeth.2019"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="333,248,339,35">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-54-01 Better late than never effective air-borne hearing of toads delayed by late maturation of the tympanic middle ear structures Journal of Experimental Biology The Company of Biologists.png"
+						alt="Better late than never"
+						doi="10.1242/jeb.143446"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="405,398,512,35">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-54-12 What You See versus What You Get Basics of Image Analysis Microscopy Today Oxford Academic.png"
+						alt="What You See versus What You Get"
+						doi="10.1093/mictod/qaag071"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="80,380,162,35">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-54-22 Multidisciplinary biophotonics open science and ... plug &amp;amp pray deep learning - Opstad - 2022 - Journal of Biophotonics - Wiley Online Library.png"
+						alt="Plug &amp; pray?"
+						doi="10.1002/jbio.202200024"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="363,386,193,35">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-54-30 Frontiers It takes Two Discovery of Spider Pax2 Duplicates Indicates Prominent Role in Chelicerate Central Nervous System Eye as Well as External Sense Organ Precursor Formation and Diversif[...].png"
+						alt="It takes Two"
+						doi="10.3389/fevo.2022.810077"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="13,338,845,55">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-54-52 Light-sheet microscopy for everyone Experience of building an OpenSPIM to study flatworm development BMC Developmental Biology Springer Nature Link.png"
+						alt="Light-sheet microscopy for everyone?"
+						doi="10.1186/s12861-016-0122-0"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="333,216,503,35">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-54-59 The physics of dancing peanuts in beer Royal Society Open Science The Royal Society.png"
+						alt="The physics of dancing peanuts in beer"
+						doi="10.1098/rsos.230376"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="369,328,525,45">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-55-06 Should I stay or should I go Prolonged residency in freshwater leads to greater size-at-age in a facultatively catadromous fish - ScienceDirect.png"
+						alt="Should I stay, or should I go?"
+						doi="10.1016/j.ecss.2026.110083"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="369,338,445,45">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 15-55-16 Dynamic task allocation how and why do social insect workers take on new tasks - ScienceDirect.png"
+						alt="Dynamic task allocation"
+						doi="10.1016/j.anbehav.2019.09.021"
+					/>
+				</section>
+
+				<section class="paper-title-slide" data-title-crop="650,178,211,38">
+					<img
+						class="paper-screenshot"
+						src="img/Screenshot 2026-08-11 at 16-53-54 2014-07-11 - Fiji won't quit!.png"
+						alt="Fiji won't quit"
+						doi="10.3109/14015439.2016.1156737"
+					/>
+				</section>
 			</div>
 		</div>
 
 		<script src="dist/reveal.js"></script>
-		<script src="dist/plugin/notes.js"></script>
-		<script src="dist/plugin/markdown.js"></script>
-		<script src="dist/plugin/highlight.js"></script>
 		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+			const PaperTitleMorph = {
+				id: "paper-title-morph",
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+				states: new WeakMap(),
+
+				timings: {
+					unmarked: 1000,
+					highlight: 1500,
+					hold: 1020,
+					morph: 7760,
+				},
+
+				destination: {
+					top: 8,
+					height: 72,
+				},
+
+				stage: {
+					top: 88,
+				},
+
+				async init(deck) {
+					this.deck = deck;
+
+					const slides = [
+						...deck.getRevealElement().querySelectorAll(".paper-title-slide"),
+					];
+					await Promise.all(slides.map((slide) => this.prepareSlide(slide)));
+
+					deck.on("ready", ({ currentSlide }) => this.playRaster(currentSlide));
+					deck.on("slidechanged", ({ previousSlide, currentSlide }) => {
+						this.resetRaster(previousSlide);
+						this.playRaster(currentSlide);
+					});
+					deck.addKeyBinding(
+						{
+							keyCode: 82,
+							key: "R",
+							description: "Replay the paper title animation",
+						},
+						() => this.playRaster(deck.getCurrentSlide()),
+					);
+				},
+
+				async prepareSlide(slide) {
+					const image = slide.querySelector(".paper-screenshot");
+					if (!image) {
+						throw new Error("Paper title slides require a screenshot image");
+					}
+
+					if (!image.complete || !image.naturalWidth) {
+						await image.decode();
+					}
+
+					const crop = this.parseCrop(slide.dataset.titleCrop);
+					const raster = this.createRaster(image, crop);
+
+					const veil = document.createElement("div");
+					veil.className = "paper-title-veil";
+					veil.setAttribute("aria-hidden", "true");
+
+					const sourceFrame = document.createElement("div");
+					sourceFrame.className = "paper-title-source-frame";
+					sourceFrame.setAttribute("aria-hidden", "true");
+					sourceFrame.append(raster);
+
+					slide.append(veil, sourceFrame);
+					this.states.set(slide, {
+						slide,
+						image,
+						sourceFrame,
+						veil,
+						crop,
+						animations: [],
+						run: 0,
+					});
+				},
+
+				createRaster(image, crop) {
+					const oversample = 4;
+					const scale = (this.destination.height * oversample) / crop.height;
+					const canvas = document.createElement("canvas");
+					canvas.className = "paper-title-raster";
+					canvas.setAttribute("aria-hidden", "true");
+					canvas.width = Math.round(crop.width * scale);
+					canvas.height = this.destination.height * oversample;
+
+					const context = canvas.getContext("2d", {
+						willReadFrequently: true,
+					});
+					if (!context) {
+						throw new Error("Could not create the paper title canvas");
+					}
+
+					context.imageSmoothingEnabled = true;
+					context.imageSmoothingQuality = "high";
+					context.drawImage(
+						image,
+						crop.x,
+						crop.y,
+						crop.width,
+						crop.height,
+						0,
+						0,
+						canvas.width,
+						canvas.height,
+					);
+
+					const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+					const sampleSize = Math.min(12, canvas.width, canvas.height);
+					let background = 0;
+					let samples = 0;
+					for (let y = 0; y < sampleSize; y++) {
+						for (let x = 0; x < sampleSize; x++) {
+							for (const [sampleX, sampleY] of [
+								[x, y],
+								[canvas.width - 1 - x, y],
+								[x, canvas.height - 1 - y],
+								[canvas.width - 1 - x, canvas.height - 1 - y],
+							]) {
+								const index = (sampleY * canvas.width + sampleX) * 4;
+								background += this.luminance(
+									pixels.data[index],
+									pixels.data[index + 1],
+									pixels.data[index + 2],
+								);
+								samples++;
+							}
+						}
+					}
+					background /= samples;
+
+					let foreground = background;
+					for (let index = 0; index < pixels.data.length; index += 4) {
+						foreground = Math.min(
+							foreground,
+							this.luminance(
+								pixels.data[index],
+								pixels.data[index + 1],
+								pixels.data[index + 2],
+							),
+						);
+					}
+
+					const range = Math.max(1, background - foreground);
+					for (let index = 0; index < pixels.data.length; index += 4) {
+						const coverage =
+							(background -
+								this.luminance(
+									pixels.data[index],
+									pixels.data[index + 1],
+									pixels.data[index + 2],
+								)) /
+							range;
+						const restored = Math.pow(
+							Math.min(1, Math.max(0, (coverage - 0.03) / 0.94)),
+							0.9,
+						);
+						const gray = Math.round((1 - restored) * 255);
+
+						pixels.data[index] = gray;
+						pixels.data[index + 1] = gray;
+						pixels.data[index + 2] = gray;
+						pixels.data[index + 3] = 255;
+					}
+					context.putImageData(pixels, 0, 0);
+					return canvas;
+				},
+
+				luminance(red, green, blue) {
+					return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+				},
+
+				layoutRaster(state) {
+					const slideWidth = state.slide.offsetWidth;
+					const imageScale =
+						state.image.offsetHeight / state.image.naturalHeight;
+					const image = {
+						x:
+							state.image.offsetLeft +
+							(state.image.offsetWidth -
+								state.image.naturalWidth * imageScale) /
+								2,
+						y:
+							state.image.offsetTop +
+							(state.image.offsetHeight -
+								state.image.naturalHeight * imageScale) /
+								2,
+						width: state.image.naturalWidth * imageScale,
+						height: state.image.naturalHeight * imageScale,
+					};
+					const source = {
+						x: image.x + state.crop.x * imageScale,
+						y: image.y + state.crop.y * imageScale,
+						width: state.crop.width * imageScale,
+						height: state.crop.height * imageScale,
+					};
+
+					this.setRect(state.veil, {
+						x: state.image.offsetLeft,
+						y: state.image.offsetTop,
+						width: state.image.offsetWidth,
+						height: state.image.offsetHeight,
+					});
+					this.setRect(state.sourceFrame, source);
+
+					const scale = this.destination.height / source.height;
+					const destinationWidth = source.width * scale;
+					const destinationX = (slideWidth - destinationWidth) / 2;
+					state.sourceTargetTransform = `translate3d(${
+						destinationX - source.x
+					}px, ${this.destination.top - source.y}px, 0) scale(${scale})`;
+				},
+
+				resetRaster(slide) {
+					const state = this.states.get(slide);
+					if (!state) return;
+
+					state.run++;
+					state.animations.forEach((animation) => animation.cancel());
+					state.animations = [];
+					state.veil.style.opacity = "0";
+					state.sourceFrame.style.opacity = "0";
+					state.sourceFrame.style.transform = "none";
+					slide.dataset.paperTitleState = "idle";
+				},
+
+				async playRaster(slide) {
+					const state = this.states.get(slide);
+					if (!state) return;
+
+					this.resetRaster(slide);
+					this.layoutRaster(state);
+					const run = state.run;
+
+					if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+						this.finishRaster(state);
+						return;
+					}
+
+					slide.dataset.paperTitleState = "unmarked";
+					if (!(await this.wait(this.timings.unmarked, state, run))) return;
+
+					slide.dataset.paperTitleState = "highlight";
+					await Promise.all([
+						this.animate(state, state.veil, [{ opacity: 0 }, { opacity: 1 }], {
+							duration: this.timings.highlight,
+							easing: "ease-out",
+							fill: "forwards",
+						}),
+						this.animate(
+							state,
+							state.sourceFrame,
+							[{ opacity: 0 }, { opacity: 1 }],
+							{
+								duration: this.timings.highlight,
+								easing: "ease-out",
+								fill: "forwards",
+							},
+						),
+					]);
+					if (state.run !== run) return;
+					if (!(await this.wait(this.timings.hold, state, run))) return;
+
+					slide.dataset.paperTitleState = "morph";
+					const morphOptions = {
+						duration: this.timings.morph,
+						easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+						fill: "forwards",
+					};
+					await Promise.all([
+						this.animate(
+							state,
+							state.sourceFrame,
+							[
+								{ opacity: 1, transform: "none" },
+								{
+									opacity: 1,
+									transform: state.sourceTargetTransform,
+									offset: 0.34,
+								},
+								{ opacity: 1, transform: state.sourceTargetTransform },
+							],
+							morphOptions,
+						),
+						this.animate(
+							state,
+							state.veil,
+							[
+								{ opacity: 1 },
+								{ opacity: 1, offset: 0.32 },
+								{ opacity: 0 },
+							],
+							morphOptions,
+						),
+					]);
+
+					if (state.run === run) {
+						this.finishRaster(state);
+					}
+				},
+
+				finishRaster(state) {
+					state.animations.forEach((animation) => animation.cancel());
+					state.animations = [];
+					state.veil.style.opacity = "0";
+					state.sourceFrame.style.opacity = "1";
+					state.sourceFrame.style.transform = state.sourceTargetTransform;
+					state.slide.dataset.paperTitleState = "complete";
+				},
+
+				parseCrop(value) {
+					const crop = value?.split(",").map(Number);
+					if (
+						crop?.length !== 4 ||
+						crop.some((number) => !Number.isFinite(number)) ||
+						crop[2] <= 0 ||
+						crop[3] <= 0
+					) {
+						throw new Error(`Invalid paper title crop: ${value}`);
+					}
+
+					const [x, y, width, height] = crop;
+					return { x, y, width, height };
+				},
+
+				setRect(element, rect) {
+					element.style.left = `${rect.x}px`;
+					element.style.top = `${rect.y}px`;
+					element.style.width = `${Math.max(0, rect.width)}px`;
+					element.style.height = `${Math.max(0, rect.height)}px`;
+				},
+
+				reset(slide) {
+					const state = this.states.get(slide);
+					if (!state) return;
+
+					state.run++;
+					state.animations.forEach((animation) => animation.cancel());
+					state.animations = [];
+					state.veils.forEach((veil) => {
+						veil.style.opacity = "0";
+					});
+					state.sourceCover.style.opacity = "0";
+					state.sourceFrame.style.opacity = "0";
+					state.sourceFrame.style.transform = "none";
+					state.final.style.opacity = "0";
+					state.final.style.transform = state.finalInitialTransform ?? "none";
+					state.underline.style.opacity = "0";
+					state.underline.style.transform = "scaleX(0)";
+					slide.dataset.paperTitleState = "idle";
+				},
+
+				async play(slide) {
+					const state = this.states.get(slide);
+					if (!state) return;
+
+					this.reset(slide);
+					this.layout(state);
+					if (!state.sameTitle) {
+						state.final.style.transform = state.finalInitialTransform;
+					}
+					const run = state.run;
+
+					if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+						this.finish(state);
+						return;
+					}
+
+					slide.dataset.paperTitleState = "unmarked";
+					if (!(await this.wait(this.timings.unmarked, state, run))) return;
+
+					slide.dataset.paperTitleState = "highlight";
+					await Promise.all([
+						...state.veils.map((veil) =>
+							this.animate(
+								state,
+								veil,
+								[{ opacity: 0 }, { opacity: 1 }],
+								{
+									duration: this.timings.highlight,
+									easing: "ease-out",
+									fill: "forwards",
+								},
+							),
+						),
+						this.animate(
+							state,
+							state.underline,
+							[
+								{ opacity: 0, transform: "scaleX(0)" },
+								{ opacity: 1, transform: "scaleX(1)" },
+							],
+							{
+								duration: this.timings.highlight,
+								easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+								fill: "forwards",
+							},
+						),
+					]);
+					if (state.run !== run) return;
+					if (!(await this.wait(this.timings.hold, state, run))) return;
+
+					slide.dataset.paperTitleState = "morph";
+					const morphOptions = {
+						duration: this.timings.morph,
+						easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+						fill: "forwards",
+					};
+					await Promise.all([
+						this.animate(
+							state,
+							state.sourceFrame,
+							[
+								{ opacity: 0, transform: "none" },
+								{ opacity: 1, transform: "none", offset: 0.08 },
+								{
+									opacity: 1,
+									transform: state.sourceTargetTransform,
+									offset: 0.34,
+								},
+								{
+									opacity: state.sameTitle ? 1 : 0,
+									transform: state.sourceTargetTransform,
+									offset: 0.62,
+								},
+								{
+									opacity: state.sameTitle ? 1 : 0,
+									transform: state.sourceTargetTransform,
+								},
+							],
+							morphOptions,
+						),
+						this.animate(
+							state,
+							state.final,
+							[
+								{
+									opacity: 0,
+									transform: state.finalInitialTransform,
+								},
+								{
+									opacity: 0,
+									transform: state.finalInitialTransform,
+									offset: 0.18,
+								},
+								{
+									opacity: state.sameTitle ? 0 : 1,
+									transform: "none",
+									offset: 0.68,
+								},
+								{
+									opacity: state.sameTitle ? 0 : 1,
+									transform: "none",
+								},
+							],
+							morphOptions,
+						),
+						this.animate(
+							state,
+							state.sourceCover,
+							[
+								{ opacity: 0 },
+								{ opacity: 1, offset: 0.08 },
+								{ opacity: 1, offset: 0.32 },
+								{ opacity: 0 },
+							],
+							morphOptions,
+						),
+						...state.veils.map((veil) =>
+							this.animate(
+								state,
+								veil,
+								[
+									{ opacity: 1 },
+									{ opacity: 1, offset: 0.32 },
+									{ opacity: 0 },
+								],
+								morphOptions,
+							),
+						),
+						this.animate(
+							state,
+							state.underline,
+							[
+								{ opacity: 1, transform: "scaleX(1)" },
+								{
+									opacity: 1,
+									transform: "scaleX(1)",
+									offset: 0.42,
+								},
+								{
+									opacity: 0,
+									transform: "scaleX(1)",
+									offset: 0.72,
+								},
+								{ opacity: 0, transform: "scaleX(1)" },
+							],
+							morphOptions,
+						),
+					]);
+
+					if (state.run === run) {
+						this.finish(state);
+					}
+				},
+
+				finish(state) {
+					state.animations.forEach((animation) => animation.cancel());
+					state.animations = [];
+					state.veils.forEach((veil) => {
+						veil.style.opacity = "0";
+					});
+					state.sourceCover.style.opacity = "0";
+					state.sourceFrame.style.opacity = state.sameTitle ? "1" : "0";
+					state.sourceFrame.style.transform = state.sameTitle
+						? state.sourceTargetTransform
+						: "none";
+					state.final.style.opacity = state.sameTitle ? "0" : "1";
+					state.final.style.transform = "none";
+					state.underline.style.opacity = "0";
+					state.slide.dataset.paperTitleState = "complete";
+				},
+
+				animate(state, element, keyframes, options) {
+					const animation = element.animate(keyframes, options);
+					state.animations.push(animation);
+					return animation.finished.catch(() => undefined);
+				},
+
+				wait(duration, state, run) {
+					return new Promise((resolve) => {
+						window.setTimeout(() => resolve(state.run === run), duration);
+					});
+				},
+			};
+
+			Reveal.initialize({
+				width: 1327,
+				height: 912,
+				margin: 0,
+				center: false,
+				controls: false,
+				progress: false,
+				hash: true,
+				transition: "none",
+				backgroundTransition: "none",
+				plugins: [PaperTitleMorph],
 			});
 		</script>
 	</body>
