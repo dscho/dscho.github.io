@@ -135,7 +135,7 @@
 					/>
 				</section>
 
-				<section class="paper-title-slide" data-title-crop="13,338,845,55">
+				<section class="paper-title-slide" data-title-crop="13,338,849,59" data-title-invert="true">
 					<img
 						class="paper-screenshot"
 						src="img/Screenshot 2026-08-11 at 15-54-52 Light-sheet microscopy for everyone Experience of building an OpenSPIM to study flatworm development BMC Developmental Biology Springer Nature Link.png"
@@ -239,7 +239,8 @@
 					}
 
 					const crop = this.parseCrop(slide.dataset.titleCrop);
-					const raster = this.createRaster(image, crop);
+					const invert = slide.dataset.titleInvert == "true";
+					const raster = this.createRaster(image, crop, invert);
 
 					const veil = document.createElement("div");
 					veil.className = "paper-title-veil";
@@ -262,7 +263,7 @@
 					});
 				},
 
-				createRaster(image, crop) {
+				createRaster(image, crop, invert) {
 					const oversample = 4;
 					const scale = (this.destination.height * oversample) / crop.height;
 					const canvas = document.createElement("canvas");
@@ -293,6 +294,11 @@
 					);
 
 					const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+					if (invert) {
+						for (let i = 0; i < pixels.data.length; i++) {
+							pixels.data[i] = 255 - pixels.data[i];
+						}
+					}
 					const sampleSize = Math.min(12, canvas.width, canvas.height);
 					let background = 0;
 					let samples = 0;
