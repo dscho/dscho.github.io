@@ -1,8 +1,10 @@
 import { spawn } from 'node:child_process';
 import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import puppeteer from 'puppeteer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
@@ -15,6 +17,17 @@ const imageTypes = new Map([
 ]);
 
 const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+const contentTypes = new Map([
+	['.css', 'text/css'],
+	['.gif', 'image/gif'],
+	['.html', 'text/html'],
+	['.js', 'text/javascript'],
+	['.mjs', 'text/javascript'],
+	['.png', 'image/png'],
+	['.svg', 'image/svg+xml'],
+	['.woff', 'font/woff'],
+	['.woff2', 'font/woff2'],
+]);
 
 const escapeXml = (value) =>
 	String(value)
@@ -40,6 +53,43 @@ const run = (command, args, options = {}) =>
 		});
 	});
 
+const delay = (milliseconds) =>
+	new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
+
+const startServer = async () => {
+	const server = createServer(async (request, response) => {
+		try {
+			const pathname = decodeURIComponent(
+				new URL(request.url, 'http://localhost').pathname,
+			);
+			const relative = pathname === '/' ? 'index.html' : pathname.slice(1);
+			const file = resolve(root, relative);
+			if (file !== root && !file.startsWith(`${root}/`)) {
+				response.writeHead(403).end();
+				return;
+			}
+
+			const contents = await readFile(file);
+			response.writeHead(200, {
+				'Content-Type':
+					contentTypes.get(extname(file).toLowerCase()) ||
+					'application/octet-stream',
+			});
+			response.end(contents);
+		} catch (error) {
+			response.writeHead(error.code === 'ENOENT' ? 404 : 500).end();
+		}
+	});
+	await new Promise((resolvePromise, reject) => {
+		server.once('error', reject);
+		server.listen(0, '127.0.0.1', resolvePromise);
+	});
+	return {
+		server,
+		url: `http://127.0.0.1:${server.address().port}/`,
+	};
+};
+
 const writePart = async (packageRoot, name, contents) => {
 	const path = join(packageRoot, name);
 	await mkdir(dirname(path), { recursive: true });
@@ -64,7 +114,7 @@ const groupShape = `
 const contentTypesXml = (slides) => {
 	const imageDefaults = [
 		...new Set(
-			slides.map(({ image }) => {
+			slides.flatMap((slide) => [slide.image, ...(slide.overlays || []).map(({ image }) => image)]).map((image) => {
 				const extension = extname(image).toLowerCase();
 				const contentType = imageTypes.get(extension);
 				if (!contentType) {
@@ -177,38 +227,46 @@ const presentationRelationshipsXml = (slideCount) => {
 </Relationships>`;
 };
 
-const slideXml = ({ width, height }, index) => `${xmlDeclaration}
-<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
-	<p:cSld>
-		<p:spTree>
-			${groupShape}
+const pictureXml = ({ x, y, width, height }, index) => `
 			<p:pic>
 				<p:nvPicPr>
-					<p:cNvPr id="2" name="Slide ${index + 1}"/>
+					<p:cNvPr id="${index + 2}" name="Slide image ${index + 1}"/>
 					<p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>
 					<p:nvPr/>
 				</p:nvPicPr>
 				<p:blipFill>
-					<a:blip r:embed="rId2"/>
+					<a:blip r:embed="rId${index + 2}"/>
 					<a:stretch><a:fillRect/></a:stretch>
 				</p:blipFill>
 				<p:spPr>
 					<a:xfrm>
-						<a:off x="0" y="0"/>
-						<a:ext cx="${width * emusPerPixel}" cy="${height * emusPerPixel}"/>
+						<a:off x="${Math.round(x * emusPerPixel)}" y="${Math.round(y * emusPerPixel)}"/>
+						<a:ext cx="${Math.round(width * emusPerPixel)}" cy="${Math.round(height * emusPerPixel)}"/>
 					</a:xfrm>
 					<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
 				</p:spPr>
-			</p:pic>
+			</p:pic>`;
+
+const slideXml = (_, pictures) => `${xmlDeclaration}
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+	<p:cSld>
+		<p:spTree>
+			${groupShape}
+			${pictures.map(pictureXml).join('')}
 		</p:spTree>
 	</p:cSld>
 	<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
 </p:sld>`;
 
-const slideRelationshipsXml = (mediaName) => `${xmlDeclaration}
+const slideRelationshipsXml = (mediaNames) => `${xmlDeclaration}
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>
-	<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/${escapeXml(mediaName)}"/>
+	${mediaNames
+		.map(
+			(name, index) =>
+				`<Relationship Id="rId${index + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/${escapeXml(name)}"/>`,
+		)
+		.join('\n\t')}
 </Relationships>`;
 
 const slideMasterXml = `${xmlDeclaration}
@@ -295,6 +353,209 @@ const viewPropsXml = `${xmlDeclaration}
 const tableStylesXml = `${xmlDeclaration}
 <a:tblStyleLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" def="{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}"/>`;
 
+const encodeGif = async (frames, fps, output) => {
+	await run('ffmpeg', [
+		'-y',
+		'-hide_banner',
+		'-loglevel',
+		'error',
+		'-framerate',
+		String(fps),
+		'-i',
+		join(frames, 'frame-%04d.png'),
+		'-filter_complex',
+		'[0:v]split[frames][palette];[palette]palettegen=max_colors=256:stats_mode=diff[colors];[frames][colors]paletteuse=dither=sierra2_4a',
+		'-loop',
+		'-1',
+		'-final_delay',
+		'100',
+		output,
+	]);
+};
+
+const captureFrames = async (page, slide, directory, fps) => {
+	const interval = 1000 / fps;
+	const maximum = slide.titleAnimation ? 14000 : 3500;
+	const minimum = slide.titleAnimation ? 1000 : 1400;
+	const started = Date.now();
+	let frame = 0;
+
+	while (true) {
+		const target = started + frame * interval;
+		await delay(Math.max(0, target - Date.now()));
+		await page.screenshot({
+			path: join(directory, `frame-${String(frame).padStart(4, '0')}.png`),
+		});
+
+		const elapsed = Date.now() - started;
+		const settled = await page.evaluate(() => {
+			const current = Reveal.getCurrentSlide();
+			if (current.classList.contains('paper-title-slide')) {
+				return current.dataset.paperTitleState === 'complete';
+			}
+			const animations = current.getAnimations({ subtree: true });
+			return (
+				animations.length > 0 &&
+				animations.every((animation) => animation.playState === 'finished')
+			);
+		});
+		if (elapsed >= minimum && settled) break;
+		if (elapsed >= maximum) {
+			throw new Error(`Slide ${slide.h}/${slide.v} did not settle`);
+		}
+		frame++;
+	}
+};
+
+const capturePresentation = async ({ fps, limit, workspace }) => {
+	const { server, url } = await startServer();
+	const browser = await puppeteer.launch({
+		headless: true,
+		args: ['--no-sandbox', '--disable-setuid-sandbox'],
+	});
+
+	try {
+		const errors = [];
+		const page = await browser.newPage();
+		await page.setViewport({ width: 1327, height: 912, deviceScaleFactor: 1 });
+		page.on('pageerror', (error) => errors.push(error.message));
+		await page.goto(url, { waitUntil: 'networkidle0' });
+		await page.waitForFunction(() => window.Reveal?.isReady());
+		await page.waitForFunction(() =>
+			[...document.images].every(
+				(image) => image.complete && image.naturalWidth > 0,
+			),
+		);
+
+		const presentation = await page.evaluate(() => ({
+			title: document.title,
+			slides: Reveal.getSlides().map((slide) => {
+				const { h, v } = Reveal.getIndices(slide);
+				const source = slide.querySelector(
+					'.paper-screenshot[doi], .paper-stack-paper-new[doi]',
+				);
+				const notesHtml = Reveal.getSlideNotes(slide) || '';
+				const notesContainer = document.createElement('div');
+				notesContainer.innerHTML = notesHtml;
+				const assetAnimation = slide.querySelector('.fiji-title-logo');
+				const titleAnimation = slide.classList.contains('paper-title-slide');
+				return {
+					h,
+					v: v ?? 0,
+					doi: source?.getAttribute('doi') || '',
+					notes: notesContainer.innerText.trim(),
+					title:
+						source?.alt ||
+						slide.querySelector('h1')?.innerText.replaceAll('\n', ' ') ||
+						`Slide ${h}/${v ?? 0}`,
+					captureMode: assetAnimation
+						? 'overlay-gif'
+						: titleAnimation ||
+							  slide.parentElement.classList.contains('paper-stack-sequence')
+							? 'animated'
+							: 'static',
+					titleAnimation,
+				};
+			}),
+		}));
+		const selected = Number.isFinite(limit)
+			? presentation.slides.slice(0, limit)
+			: presentation.slides;
+		const slides = [];
+
+		for (const [index, slide] of selected.entries()) {
+			if (index === 0) {
+				await page.evaluate(() => Reveal.slide(0, 0));
+				if (slide.titleAnimation) {
+					await page.keyboard.press('r');
+				}
+			} else {
+				await page.evaluate(
+					({ h, v }) => Reveal.slide(h, v),
+					slide,
+				);
+				await page.waitForFunction(
+					({ h, v }) => {
+						const current = Reveal.getIndices();
+						return current.h === h && current.v === v;
+					},
+					{},
+					slide,
+				);
+			}
+			await page.evaluate(
+				() =>
+					new Promise((resolvePromise) =>
+						requestAnimationFrame(() => requestAnimationFrame(resolvePromise)),
+					),
+			);
+
+			if (slide.captureMode === 'overlay-gif') {
+				const overlay = await page.evaluate(() => {
+					const logo = Reveal.getCurrentSlide().querySelector('.fiji-title-logo');
+					const bounds = logo.getBoundingClientRect();
+					logo.style.visibility = 'hidden';
+					return {
+						x: bounds.x,
+						y: bounds.y,
+						width: bounds.width,
+						height: bounds.height,
+					};
+				});
+				const background = join(workspace, `slide-${index + 1}.png`);
+				await page.screenshot({ path: background });
+				await page.evaluate(() => {
+					Reveal.getCurrentSlide().querySelector(
+						'.fiji-title-logo',
+					).style.visibility = '';
+				});
+				slides.push({
+					...slide,
+					image: background,
+					overlays: [
+						{
+							image: join(root, 'img/animated-fiji-logo.gif'),
+							...overlay,
+						},
+					],
+				});
+				continue;
+			}
+
+			if (slide.captureMode === 'static') {
+				const image = join(workspace, `slide-${index + 1}.png`);
+				await page.screenshot({ path: image });
+				slides.push({ ...slide, image });
+				continue;
+			}
+
+			const frames = join(workspace, `slide-${index + 1}-frames`);
+			const gif = join(workspace, `slide-${index + 1}.gif`);
+			await mkdir(frames, { recursive: true });
+			console.log(
+				`Capturing slide ${index + 1}/${selected.length}: ${slide.title}`,
+			);
+			await captureFrames(page, slide, frames, fps);
+			await encodeGif(frames, fps, gif);
+			slides.push({ ...slide, image: gif });
+		}
+
+		if (errors.length) {
+			throw new Error(errors.join('\n'));
+		}
+
+		return {
+			title: presentation.title,
+			width: 1327,
+			height: 912,
+			slides,
+		};
+	} finally {
+		await browser.close();
+		await new Promise((resolvePromise) => server.close(resolvePromise));
+	}
+};
+
 const writePptx = async (manifest, output) => {
 	const packageRoot = await mkdtemp(join(tmpdir(), 'fiji-pptx-'));
 	const manifestRoot = manifest.baseDir || root;
@@ -332,20 +593,37 @@ const writePptx = async (manifest, output) => {
 		await writePart(packageRoot, 'ppt/theme/theme1.xml', themeXml);
 		await mkdir(join(packageRoot, 'ppt/media'), { recursive: true });
 
+		let mediaIndex = 1;
 		for (const [index, slide] of manifest.slides.entries()) {
-			const extension = extname(slide.image).toLowerCase();
-			const mediaName = `image${index + 1}${extension}`;
-			const image = resolve(manifestRoot, slide.image);
-			await copyFile(image, join(packageRoot, 'ppt/media', mediaName));
+			const pictures = [
+				{
+					image: slide.image,
+					x: 0,
+					y: 0,
+					width: manifest.width,
+					height: manifest.height,
+				},
+				...(slide.overlays || []),
+			];
+			const mediaNames = [];
+			for (const picture of pictures) {
+				const extension = extname(picture.image).toLowerCase();
+				const mediaName = `image${mediaIndex++}${extension}`;
+				await copyFile(
+					resolve(manifestRoot, picture.image),
+					join(packageRoot, 'ppt/media', mediaName),
+				);
+				mediaNames.push(mediaName);
+			}
 			await writePart(
 				packageRoot,
 				`ppt/slides/slide${index + 1}.xml`,
-				slideXml(manifest, index),
+				slideXml(manifest, pictures),
 			);
 			await writePart(
 				packageRoot,
 				`ppt/slides/_rels/slide${index + 1}.xml.rels`,
-				slideRelationshipsXml(mediaName),
+				slideRelationshipsXml(mediaNames),
 			);
 		}
 
@@ -373,12 +651,50 @@ const writePptx = async (manifest, output) => {
 	}
 };
 
-const [manifestName, outputName = 'fiji-wont-quit.pptx'] = process.argv.slice(2);
-if (!manifestName) {
-	throw new Error('Usage: node scripts/export-pptx.mjs <manifest.json> [output.pptx]');
-}
+const parseOptions = (args) => {
+	const options = {
+		fps: 10,
+		limit: Number.POSITIVE_INFINITY,
+		output: 'fiji-wont-quit.pptx',
+	};
 
-const manifestPath = resolve(manifestName);
-const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-manifest.baseDir = dirname(manifestPath);
-await writePptx(manifest, resolve(outputName));
+	for (let index = 0; index < args.length; index++) {
+		switch (args[index]) {
+			case '--fps':
+				options.fps = Number(args[++index]);
+				break;
+			case '--limit':
+				options.limit = Number(args[++index]);
+				break;
+			default:
+				options.output = args[index];
+		}
+	}
+	if (!Number.isFinite(options.fps) || options.fps <= 0) {
+		throw new Error('FPS must be a positive number');
+	}
+	if (
+		options.limit !== Number.POSITIVE_INFINITY &&
+		(!Number.isInteger(options.limit) || options.limit <= 0)
+	) {
+		throw new Error('Slide limit must be a positive integer');
+	}
+	return options;
+};
+
+const args = process.argv.slice(2);
+if (args[0] === '--manifest') {
+	const manifestPath = resolve(args[1]);
+	const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+	manifest.baseDir = dirname(manifestPath);
+	await writePptx(manifest, resolve(args[2] || 'fiji-wont-quit.pptx'));
+} else {
+	const options = parseOptions(args);
+	const workspace = await mkdtemp(join(tmpdir(), 'fiji-pptx-capture-'));
+	try {
+		const manifest = await capturePresentation({ ...options, workspace });
+		await writePptx(manifest, resolve(options.output));
+	} finally {
+		await rm(workspace, { recursive: true, force: true });
+	}
+}
