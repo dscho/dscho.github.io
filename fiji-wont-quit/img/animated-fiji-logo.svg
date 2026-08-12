@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="880"
+     height="600"
+     viewBox="0 0 220 150"
+     role="img"
+     aria-labelledby="title description">
+  <title id="title">Animated Fiji logo caretakers</title>
+  <desc id="description">
+    Three cheerful stick figures sweep, wipe, and polish the blue Fiji logo.
+  </desc>
+  <metadata>
+    Logo artwork adapted from
+    https://raw.githubusercontent.com/fiji/fiji/feed450a3f74237b9eb427bb91da40969fdded36/images/fiji-logo-1.0.svg
+  </metadata>
+
+  <defs>
+    <filter id="logo-shadow" x="-30%" y="-30%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="3.2"/>
+    </filter>
+    <filter id="ground-blur" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <filter id="sparkle-glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="logo-clip">
+      <path transform="translate(55 20) scale(1.25)"
+            d="M 10.197491,8.5032996 L 10.197491,78.5033 L 20.197492,78.5033 L 20.197492,18.5033 L 80.197491,18.5033 L 80.197491,8.5032996 L 20.197492,8.5032996 L 10.197491,8.5032996 z M 30.197492,28.5033 L 30.197492,58.5033 L 40.197491,58.5033 L 40.197491,28.5033 L 30.197492,28.5033 z M 50.197491,28.5033 L 50.197491,68.5033 L 30.197492,68.5033 L 30.197492,78.5033 L 50.197491,78.5033 L 60.197491,78.5033 L 60.197491,28.5033 L 50.197491,28.5033 z M 70.197491,28.5033 L 70.197491,58.5033 L 80.197491,58.5033 L 80.197491,28.5033 L 70.197491,28.5033 z"/>
+    </clipPath>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#fff" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .figure-line {
+      fill: none;
+      stroke: #364154;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .fine-line {
+      fill: none;
+      stroke: #364154;
+      stroke-width: 1.35;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .skin {
+      fill: #ffd7aa;
+      stroke: #364154;
+      stroke-width: 1.25;
+    }
+    .eye {
+      fill: #364154;
+    }
+    .shoe {
+      fill: none;
+      stroke: #273142;
+      stroke-width: 2.6;
+      stroke-linecap: round;
+    }
+    .sweeper-bob {
+      animation: bob 1.45s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 38px 121px;
+    }
+    .top-bob {
+      animation: small-bob 1.25s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 116px 30px;
+    }
+    .polisher-bob {
+      animation: bob 1.1s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 181px 102px;
+    }
+    .polisher-spin {
+      animation: spin .65s linear infinite;
+      transform-box: view-box;
+      transform-origin: 158px 81px;
+    }
+    .logo-sheen {
+      animation: shine 6s ease-in-out infinite;
+      transform-box: view-box;
+    }
+    .dust-one {
+      animation: dust-one 1.8s ease-out infinite;
+      transform-box: view-box;
+      transform-origin: 70px 122px;
+    }
+    .dust-two {
+      animation: dust-two 1.8s .2s ease-out infinite;
+      transform-box: view-box;
+      transform-origin: 72px 123px;
+    }
+    .sparkle {
+      opacity: 0;
+      animation: sparkle 2.4s ease-in-out infinite;
+      transform-box: view-box;
+    }
+    .sparkle.two {
+      animation-delay: .65s;
+    }
+    .sparkle.three {
+      animation-delay: 1.3s;
+    }
+    .heart {
+      opacity: 0;
+      animation: float-heart 4.8s ease-out infinite;
+      transform-box: view-box;
+      transform-origin: 98px 8px;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.3px); }
+    }
+    @keyframes small-bob {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-.8px) rotate(1deg); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes shine {
+      0%, 18% { transform: translateX(-110px); opacity: 0; }
+      24% { opacity: .8; }
+      52% { transform: translateX(220px); opacity: .55; }
+      53%, 100% { transform: translateX(220px); opacity: 0; }
+    }
+    @keyframes dust-one {
+      0%, 28% { opacity: 0; transform: translate(0, 0) scale(.5); }
+      42% { opacity: .55; }
+      82%, 100% { opacity: 0; transform: translate(-7px, -7px) scale(1.35); }
+    }
+    @keyframes dust-two {
+      0%, 28% { opacity: 0; transform: translate(0, 0) scale(.4); }
+      42% { opacity: .45; }
+      82%, 100% { opacity: 0; transform: translate(6px, -9px) scale(1.25); }
+    }
+    @keyframes sparkle {
+      0%, 62%, 100% { opacity: 0; transform: scale(.25) rotate(0); }
+      72% { opacity: 1; transform: scale(1) rotate(45deg); }
+      84% { opacity: 0; transform: scale(.4) rotate(90deg); }
+    }
+    @keyframes float-heart {
+      0%, 58% { opacity: 0; transform: translate(0, 4px) scale(.5); }
+      66% { opacity: .9; }
+      88%, 100% { opacity: 0; transform: translate(4px, -10px) scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+
+  <ellipse cx="111" cy="124" rx="75" ry="5"
+           fill="#203047" opacity=".16" filter="url(#ground-blur)"/>
+
+  <g id="i-repair-worker-stage" transform="translate(99 56) scale(.5)">
+    <g id="i-repair-travel" transform="translate(0 24)">
+      <animateTransform attributeName="transform" type="translate"
+                        values="0 24;0 24;0 0;0 0;0 24;0 24"
+                        keyTimes="0;.0625;.1875;.75;.875;1"
+                        dur="16s" repeatCount="indefinite"/>
+      <g id="i-repair-worker" fill="none" stroke="#364154"
+         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <g id="i-repair-legs">
+          <path d="M-5 6-7 13-5 19" stroke="#364154" stroke-width="2.2"/>
+          <path d="M-1 6 1 13-1 19" stroke="#364154" stroke-width="2.2"/>
+          <animateTransform attributeName="transform" type="rotate"
+                            values="-3 0 6;3 0 6;-3 0 6"
+                            keyTimes="0;.5;1" dur="2s" repeatCount="indefinite"/>
+        </g>
+
+        <path d="M-7-7Q-3-10 1-7L0 7H-6Z"
+              fill="#63b7af" stroke="#364154" stroke-width="1.2"/>
+        <path d="M-6 4H0" stroke="#556274" stroke-width="1.2"/>
+
+        <circle cx="-3" cy="-14" r="5"
+                fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+        <path d="M-7.8-14.8a5 5 0 0 1 9.6 0c-2.6-1.2-7-1.2-9.6 0Z"
+              fill="#4f392b" stroke="none"/>
+        <circle cx="-.8" cy="-15" r=".55" fill="#364154" stroke="none"/>
+        <path d="M1.1-14.3 2.7-13.3 1.1-12.6Z"
+              fill="#ffd7aa" stroke="#364154" stroke-width=".7"/>
+        <path d="M-.7-11.6q1 .8 2-.1" stroke="#364154" stroke-width="1.2"/>
+
+        <g id="i-support-arm" transform="translate(-6 -6)">
+          <g transform="rotate(69.80)">
+            <line x1="0" y1="0" x2="3.5" y2="0"
+                  stroke="#364154" stroke-width="2.2"/>
+            <g transform="translate(3.5 0) rotate(59.32)">
+              <line x1="0" y1="0" x2="3.5" y2="0"
+                    stroke="#364154" stroke-width="2.2"/>
+              <g transform="translate(3.5 0)">
+                <circle cx="0" cy="0" r="1.35"
+                        fill="#ffd7aa" stroke="#364154" stroke-width="1.2"/>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <g id="i-working-arm" transform="translate(0 -6)">
+          <g transform="rotate(62.26)">
+            <animateTransform attributeName="transform" type="rotate"
+                              values="62.26;62.26;-72.37;-70.27;-70.27;62.26;-77.11;-70.27;62.26;62.26"
+                              keyTimes="0;.1875;.25;.36;.375;.4375;.5;.6875;.75;1"
+                              dur="16s" repeatCount="indefinite"/>
+            <line x1="0" y1="0" x2="6" y2="0"
+                  stroke="#364154" stroke-width="2.2"/>
+            <g transform="translate(6 0)">
+              <g transform="rotate(103.77)">
+                <animateTransform attributeName="transform" type="rotate"
+                                  values="103.77;103.77;44.42;101.68;101.68;103.77;59.21;101.68;103.77;103.77"
+                                  keyTimes="0;.1875;.25;.36;.375;.4375;.5;.6875;.75;1"
+                                  dur="16s" repeatCount="indefinite"/>
+                <line x1="0" y1="0" x2="7" y2="0"
+                      stroke="#364154" stroke-width="2.2"/>
+                <g transform="translate(7 0)">
+                  <g id="i-tool-wrist" transform="rotate(-76.03)">
+                    <animateTransform attributeName="transform" type="rotate"
+                                      values="-76.03;-76.03;117.96;58.59;58.59;-76.03;107.90;58.59;-76.03;-76.03"
+                                      keyTimes="0;.1875;.25;.36;.375;.4375;.5;.6875;.75;1"
+                                      dur="16s" repeatCount="indefinite"/>
+                    <circle cx="0" cy="0" r="1.35"
+                            fill="#ffd7aa" stroke="#364154" stroke-width="1.2"/>
+
+                    <g opacity="0">
+                      <animate attributeName="opacity"
+                               values="0;0;1;1;0;0"
+                               keyTimes="0;.24;.25;.375;.385;1"
+                               dur="16s" repeatCount="indefinite"/>
+                      <path d="M-1-3H7V3H-1Z"
+                            fill="#ffbf3f" stroke="#4d5868" stroke-width="1"/>
+                      <path d="M1 3V7H4V3" fill="#d98b2b"
+                            stroke="#4d5868" stroke-width=".9"/>
+                      <path d="M7-1.5H9V1.5H7Z"
+                            fill="#7c8795" stroke="#4d5868" stroke-width=".8"/>
+                      <path d="M9 0H13.2" stroke="#737d8c" stroke-width="1.2"/>
+                      <path d="M12.5-.9V.9 M11.6-.7V.7"
+                            stroke="#3d4654" stroke-width=".7">
+                        <animateTransform attributeName="transform" type="rotate"
+                                          values="0 12.5 0;360 12.5 0"
+                                          dur=".25s" repeatCount="indefinite"/>
+                      </path>
+                    </g>
+
+                    <g opacity="0">
+                      <animate attributeName="opacity"
+                               values="0;0;1;1;0;0"
+                               keyTimes="0;.49;.5;.6875;.70;1"
+                               dur="16s" repeatCount="indefinite"/>
+                      <g>
+                        <animateTransform attributeName="transform" type="rotate"
+                                          values="-12;12;-12;12;-12"
+                                          dur=".8s" repeatCount="indefinite"/>
+                        <path d="M-1-2.5H5V2.5H-1Z"
+                              fill="#ef5f66" stroke="#4d5868" stroke-width="1"/>
+                        <path d="M5 0H13.2" stroke="#737d8c" stroke-width="1.2"/>
+                        <path d="M12.5-.8V.8" stroke="#4d5868" stroke-width=".8"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <g id="fiji-logo">
+    <path transform="translate(55 20) scale(1.25)"
+          fill="#111" opacity=".62" filter="url(#logo-shadow)"
+          d="M 11.930261,10 L 11.930261,80 L 21.930262,80 L 21.930262,20 L 81.930261,20 L 81.930261,10 L 21.930262,10 L 11.930261,10 z M 31.930262,30 L 31.930262,60 L 41.930261,60 L 41.930261,30 L 31.930262,30 z M 51.930261,30 L 51.930261,70 L 31.930262,70 L 31.930262,80 L 51.930261,80 L 61.930261,80 L 61.930261,30 L 51.930261,30 z M 71.930261,30 L 71.930261,60 L 81.930261,60 L 81.930261,30 L 71.930261,30 z"/>
+    <path transform="translate(55 20) scale(1.25)"
+          fill="#65a4e3"
+          d="M 10.197491,8.5032996 L 10.197491,78.5033 L 20.197492,78.5033 L 20.197492,18.5033 L 80.197491,18.5033 L 80.197491,8.5032996 L 20.197492,8.5032996 L 10.197491,8.5032996 z M 30.197492,28.5033 L 30.197492,58.5033 L 40.197491,58.5033 L 40.197491,28.5033 L 30.197492,28.5033 z M 50.197491,28.5033 L 50.197491,68.5033 L 30.197492,68.5033 L 30.197492,78.5033 L 50.197491,78.5033 L 60.197491,78.5033 L 60.197491,28.5033 L 50.197491,28.5033 z M 70.197491,28.5033 L 70.197491,58.5033 L 80.197491,58.5033 L 80.197491,28.5033 L 70.197491,28.5033 z"/>
+    <g clip-path="url(#logo-clip)">
+      <g class="logo-sheen">
+        <rect x="-12" y="17" width="24" height="108"
+              fill="url(#sheen)" transform="skewX(-16)"/>
+      </g>
+    </g>
+  </g>
+
+  <g id="i-repair-mark">
+    <circle cx="103" cy="55.6" r=".9" fill="#34475b" opacity="0">
+      <animate attributeName="opacity"
+               values="0;0;1;1;0;0"
+               keyTimes="0;.36;.375;.5;.51;1"
+               dur="16s" repeatCount="indefinite"/>
+    </circle>
+    <g opacity="0" transform="translate(0 0)">
+      <animate attributeName="opacity"
+               values="0;0;1;1;0;0"
+               keyTimes="0;.43;.4375;.6874;.6875;1"
+               dur="16s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="translate"
+                        values="-5.5 4;-5.5 4;0 0;0 3;0 3"
+                        keyTimes="0;.4375;.5;.6875;1"
+                        dur="16s" repeatCount="indefinite"/>
+      <path d="M103 55.6V59.1" stroke="#6f7885" stroke-width=".8"/>
+      <path d="M101.8 55.6H104.2 M102.2 55.2 103.8 56"
+            stroke="#d9e0e8" stroke-width=".7" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g id="rope-window-cleaner">
+    <path d="M68 31 62 64V104" fill="none" stroke="#8b6b50" stroke-width="1.3"
+          stroke-linecap="round">
+      <animate attributeName="d"
+               values="M68 31 62 64V104;M68 31 62 64V104;M68 31 62 64V104;M68 31 62 60V103.927;M68 31 62 60V103.927;M68 31 62 56V103.831;M68 31 62 56V103.831;M68 31 62 52V103.701;M68 31 62 52V103.701;M68 31 62 52V103.701;M68 31 62 52V103.701;M68 31 62 56V103.831;M68 31 62 56V103.831;M68 31 62 60V103.927;M68 31 62 60V103.927;M68 31 62 64V104;M68 31 62 64V104"
+               keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+               dur="16s" repeatCount="indefinite"/>
+    </path>
+    <path d="M64.5 31H71.5" stroke="#556274" stroke-width="2"
+          stroke-linecap="round"/>
+    <circle cx="68" cy="32.5" r="1.8" fill="#d7a05d"
+            stroke="#6e512f" stroke-width=".8"/>
+
+    <g id="rope-cleaner-travel" transform="translate(0 16)">
+      <animateTransform attributeName="transform" type="translate"
+                        values="0 16;0 16;0 12;0 12;0 8;0 8;0 4;0 4;0 0;0 0;0 4;0 4;0 8;0 8;0 12;0 12;0 16"
+                        keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                        dur="16s" repeatCount="indefinite"/>
+      <g transform="translate(60 60) scale(.5)">
+        <g id="rope-cleaner" fill="none" stroke="#364154"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <g id="rope-cleaner-legs">
+             <g transform="translate(5 10)">
+               <g transform="rotate(-32.12)">
+                <animateTransform attributeName="transform" type="rotate"
+                                   values="-32.12;-32.12;32.46;-32.12;32.46;-32.12;32.46;-32.12;32.46;32.46;-32.12;32.46;-32.12;32.46;-32.12;32.46;-32.12"
+                                   keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                   dur="16s" repeatCount="indefinite"/>
+                 <line x1="0" y1="0" x2="7.5" y2="0"
+                       stroke="#364154" stroke-width="2.2"/>
+                 <g transform="translate(7.5 0)">
+                   <g transform="rotate(94.67)">
+                     <animateTransform attributeName="transform" type="rotate"
+                                       values="94.67;94.67;29.93;94.67;29.93;94.67;29.93;94.67;29.93;29.93;94.67;29.93;94.67;29.93;94.67;29.93;94.67"
+                                       keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                       dur="16s" repeatCount="indefinite"/>
+                     <line x1="0" y1="0" x2="9" y2="0"
+                           stroke="#364154" stroke-width="2.2"/>
+                     <g transform="translate(9 0)">
+                       <g transform="rotate(-62.56)">
+                         <animateTransform attributeName="transform" type="rotate"
+                                           values="-62.56;-62.56;-62.39;-62.56;-62.39;-62.56;-62.39;-62.56;-62.39;-62.39;-62.56;-62.39;-62.56;-62.39;-62.56;-62.39;-62.56"
+                                           keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                           dur="16s" repeatCount="indefinite"/>
+                         <path d="M-1 0Q1.5 2 3 0" stroke="#273142" stroke-width="2.6"/>
+                       </g>
+                     </g>
+                   </g>
+                </g>
+              </g>
+            </g>
+
+            <g transform="translate(8 10)">
+              <g transform="rotate(-30.19)">
+                <animateTransform attributeName="transform" type="rotate"
+                                  values="-30.19;-30.19;35.14;-30.19;35.14;-30.19;35.14;-30.19;35.14;35.14;-30.19;35.14;-30.19;35.14;-30.19;35.14;-30.19"
+                                  keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                  dur="16s" repeatCount="indefinite"/>
+                <line x1="0" y1="0" x2="7.5" y2="0"
+                      stroke="#364154" stroke-width="2.2"/>
+                <g transform="translate(7.5 0)">
+                  <g transform="rotate(107.24)">
+                    <animateTransform attributeName="transform" type="rotate"
+                                      values="107.24;107.24;39.61;107.24;39.61;107.24;39.61;107.24;39.61;39.61;107.24;39.61;107.24;39.61;107.24;39.61;107.24"
+                                      keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                      dur="16s" repeatCount="indefinite"/>
+                    <line x1="0" y1="0" x2="9" y2="0"
+                          stroke="#364154" stroke-width="2.2"/>
+                    <g transform="translate(9 0)">
+                      <g transform="rotate(-77.05)">
+                        <animateTransform attributeName="transform" type="rotate"
+                                          values="-77.05;-77.05;-74.75;-77.05;-74.75;-77.05;-74.75;-77.05;-74.75;-74.75;-77.05;-74.75;-77.05;-74.75;-77.05;-74.75;-77.05"
+                                          keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                          dur="16s" repeatCount="indefinite"/>
+                        <path d="M-3 0Q-1.5 2 1 0" stroke="#273142" stroke-width="2.6"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+
+          <path d="M3-5 Q7-8 10-4 L9 10H4Z"
+                fill="#ee9b56" stroke="#364154" stroke-width="1.2"/>
+          <path d="M4 7H9" stroke="#556274" stroke-width="1.5"/>
+          <path d="M9 7H4" stroke="#8b6b50" stroke-width="1.1"/>
+          <circle cx="4" cy="7" r="1.2" fill="#d7a05d"
+                  stroke="#6e512f" stroke-width=".7"/>
+
+          <circle cx="7" cy="-11" r="5"
+                  fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+          <path d="M2.2-11.8a5 5 0 0 1 9.6 0c-2.6-1.2-7-1.2-9.6 0Z"
+                fill="#8a5a3b" stroke="none"/>
+          <circle cx="3" cy="-10.5" r="1.1"
+                  fill="#ffd7aa" stroke="#364154" stroke-width=".8"/>
+          <circle cx="9.2" cy="-12" r=".55" fill="#364154" stroke="none"/>
+          <path d="M11.2-11.3 13-10.2 11.2-9.4Z"
+                fill="#ffd7aa" stroke="#364154" stroke-width=".7"/>
+          <path d="M9.2-8.5q1 .8 2-.1" stroke="#364154" stroke-width="1.2"/>
+
+          <g id="upper-rope-arm" transform="translate(7 -3)">
+            <g transform="rotate(-107.72)">
+              <animateTransform attributeName="transform" type="rotate"
+                                values="-107.72;-107.72;-157.66;-107.72;-157.66;-107.72;-157.66;-107.72;-157.66;-157.66;-107.72;-157.66;-107.72;-157.66;-107.72;-157.66;-107.72"
+                                keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                dur="16s" repeatCount="indefinite"/>
+              <line x1="0" y1="0" x2="10.5" y2="0"
+                    stroke="#364154" stroke-width="2.2"/>
+              <g transform="translate(10.5 0)">
+                <g transform="rotate(16.65)">
+                  <animateTransform attributeName="transform" type="rotate"
+                                    values="16.65;16.65;102.68;16.65;102.68;16.65;102.68;16.65;102.68;102.68;16.65;102.68;16.65;102.68;16.65;102.68;16.65"
+                                    keyTimes="0;.05;.125;.175;.25;.3;.375;.425;.5;.55;.625;.675;.75;.8;.875;.925;1"
+                                    dur="16s" repeatCount="indefinite"/>
+                  <line x1="0" y1="0" x2="11" y2="0"
+                        stroke="#364154" stroke-width="2.2"/>
+                  <g transform="translate(11 0)">
+                    <circle cx="0" cy="0" r="1.4"
+                            fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+
+          <g id="working-rope-arm" transform="translate(9 -2)">
+            <g transform="rotate(-104.53)">
+              <animateTransform attributeName="transform" type="rotate"
+                                values="-104.53;-109.28;-104.53;-158.76;-109.28;-104.53;-158.76;-109.28;-104.53;-158.76;-109.28;-104.53;-158.76;-109.28;-158.76;-104.53;-109.28;-158.76;-104.53;-109.28;-158.76;-104.53;-109.28;-158.76;-104.53"
+                                keyTimes="0;.025;.05;.125;.15;.175;.25;.275;.3;.375;.4;.425;.5;.525;.55;.625;.65;.675;.75;.775;.8;.875;.9;.925;1"
+                                dur="16s" repeatCount="indefinite"/>
+              <line x1="0" y1="0" x2="11" y2="0"
+                    stroke="#364154" stroke-width="2.2"/>
+              <g transform="translate(11 0)">
+                <g transform="rotate(5.32)">
+                  <animateTransform attributeName="transform" type="rotate"
+                                    values="5.32;131.68;5.32;98.20;131.68;5.32;98.20;131.68;5.32;98.20;131.68;5.32;98.20;131.68;98.20;5.32;131.68;98.20;5.32;131.68;98.20;5.32;131.68;98.20;5.32"
+                                    keyTimes="0;.025;.05;.125;.15;.175;.25;.275;.3;.375;.4;.425;.5;.525;.55;.625;.65;.675;.75;.775;.8;.875;.9;.925;1"
+                                    dur="16s" repeatCount="indefinite"/>
+                  <line x1="0" y1="0" x2="11.5" y2="0"
+                        stroke="#364154" stroke-width="2.2"/>
+                  <g transform="translate(11.5 0)">
+                    <g id="rope-squeegee" transform="rotate(99.21)">
+                      <animateTransform attributeName="transform" type="rotate"
+                                        values="99.21;-22.40;99.21;60.56;-22.40;99.21;60.56;-22.40;99.21;60.56;-22.40;99.21;60.56;-22.40;60.56;99.21;-22.40;60.56;99.21;-22.40;60.56;99.21;-22.40;60.56;99.21"
+                                        keyTimes="0;.025;.05;.125;.15;.175;.25;.275;.3;.375;.4;.425;.5;.525;.55;.625;.65;.675;.75;.775;.8;.875;.9;.925;1"
+                                        dur="16s" repeatCount="indefinite"/>
+                      <circle cx="0" cy="0" r="1.4"
+                              fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                      <g opacity="0">
+                        <animate attributeName="opacity"
+                                 values="0;1;0;0;1;0;0;1;0;0;1;0;0;1;0;0;1;0;0;1;0;0;1;0;0"
+                                 keyTimes="0;.025;.05;.125;.15;.175;.25;.275;.3;.375;.4;.425;.5;.525;.55;.625;.65;.675;.75;.775;.8;.875;.9;.925;1"
+                                 dur="16s" repeatCount="indefinite"/>
+                        <path d="M0 0 4 2" stroke="#6e512f" stroke-width="1.2"/>
+                        <path d="M0 2H9" stroke="#8dd8f8" stroke-width="2.2"/>
+                        <path d="M0 2.8H9" stroke="#4e819e" stroke-width=".8"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <g id="sweeper-travel">
+    <animateTransform attributeName="transform" type="translate"
+                      values="0 0;70 0;0 0" keyTimes="0;.5;1"
+                      dur="18s" repeatCount="indefinite" calcMode="spline"
+                      keySplines=".42 0 .58 1;.42 0 .58 1"/>
+    <g class="dust-one" fill="#a9b7c9">
+      <circle cx="70" cy="122" r="2.1"/>
+      <circle cx="73.5" cy="120.5" r="1.1"/>
+    </g>
+    <g class="dust-two" fill="#c3cedb">
+      <circle cx="72" cy="123" r="1.8"/>
+      <circle cx="68.5" cy="120.7" r=".9"/>
+    </g>
+
+    <g transform="translate(70 123) scale(.5) translate(-60 -123)">
+      <g id="sweeper" class="sweeper-bob"
+       fill="none" stroke="#364154" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="38" cy="123.5" rx="13" ry="1.8"
+               fill="#233148" stroke="none" opacity=".16"/>
+      <g id="sweeper-legs">
+        <g transform="translate(36 108.2)">
+          <g transform="rotate(105)">
+            <animateTransform attributeName="transform" type="rotate"
+                              values="105;90;75;90;105" keyTimes="0;.25;.5;.75;1"
+                              dur="1.8s" repeatCount="indefinite"/>
+            <line x1="0" y1="0" x2="6.2" y2="0"
+                  stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+            <g transform="translate(6.2 0)">
+              <g transform="rotate(-10)">
+                <animateTransform attributeName="transform" type="rotate"
+                                  values="-10;25;10;-20;-10" keyTimes="0;.25;.5;.75;1"
+                                  dur="1.8s" repeatCount="indefinite"/>
+                <line x1="0" y1="0" x2="6.2" y2="0"
+                      stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+                <g transform="translate(6.2 0)">
+                  <g transform="rotate(-95)">
+                    <animateTransform attributeName="transform" type="rotate"
+                                      values="-95;-115;-85;-70;-95" keyTimes="0;.25;.5;.75;1"
+                                      dur="1.8s" repeatCount="indefinite"/>
+                    <path d="M-2 0H2.2" stroke="#273142" stroke-width="2.6"
+                          stroke-linecap="round"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <g transform="translate(40 108.2)">
+          <g transform="rotate(75)">
+            <animateTransform attributeName="transform" type="rotate"
+                              values="75;90;105;90;75" keyTimes="0;.25;.5;.75;1"
+                              dur="1.8s" repeatCount="indefinite"/>
+            <line x1="0" y1="0" x2="6.2" y2="0"
+                  stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+            <g transform="translate(6.2 0)">
+              <g transform="rotate(10)">
+                <animateTransform attributeName="transform" type="rotate"
+                                  values="10;-20;-10;25;10" keyTimes="0;.25;.5;.75;1"
+                                  dur="1.8s" repeatCount="indefinite"/>
+                <line x1="0" y1="0" x2="6.2" y2="0"
+                      stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+                <g transform="translate(6.2 0)">
+                  <g transform="rotate(-85)">
+                    <animateTransform attributeName="transform" type="rotate"
+                                      values="-85;-70;-95;-115;-85" keyTimes="0;.25;.5;.75;1"
+                                      dur="1.8s" repeatCount="indefinite"/>
+                    <path d="M-2.2 0H2" stroke="#273142" stroke-width="2.6"
+                          stroke-linecap="round"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <path d="M33.2 96.5 Q38 93.7 42.8 96.5 L41.6 108.5 H34.4Z"
+            fill="#f58b57" stroke="#364154" stroke-width="1.2" stroke-linejoin="round"/>
+      <circle class="skin" cx="38" cy="90.5" r="5.2"
+              fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+      <path d="M33.1 89.7a5 5 0 0 1 9.8 0c-2.7-1.3-7.1-1.3-9.8 0Z"
+            fill="#2c6e8f" stroke="none"/>
+      <circle class="eye" cx="36.3" cy="90.4" r=".55" fill="#364154" stroke="none"/>
+      <circle class="eye" cx="39.8" cy="90.4" r=".55" fill="#364154" stroke="none"/>
+      <path class="fine-line" d="M36.4 93 Q38.2 94.2 40 92.8" stroke-width="1.35"/>
+
+      <g id="sweeping-arms">
+        <g transform="translate(40.5 99.2)">
+          <g transform="rotate(57.18)">
+            <animateTransform attributeName="transform" type="rotate"
+                              values="57.18;27.65;0.80;27.65;57.18;27.65;0.80;27.65;57.18"
+                              keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"
+                              dur="1.8s" repeatCount="indefinite"/>
+            <line x1="0" y1="0" x2="4.25" y2="0"
+                  stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+            <g transform="translate(4.25 0)">
+              <g transform="rotate(43.71)">
+                <animateTransform attributeName="transform" type="rotate"
+                                  values="43.71;94.55;129.51;94.55;43.71;94.55;129.51;94.55;43.71"
+                                  keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"
+                                  dur="1.8s" repeatCount="indefinite"/>
+                <line x1="0" y1="0" x2="4.25" y2="0"
+                      stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+                <g transform="translate(4.25 0)">
+                  <g id="sweeping-tool" transform="rotate(29.11)">
+                    <animateTransform attributeName="transform" type="rotate"
+                                      values="29.11;-3.92;-40.31;-60.48;-50.89;-60.48;-40.31;-3.92;29.11"
+                                      keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"
+                                      dur="1.8s" repeatCount="indefinite"/>
+                    <path d="M0 0H19" stroke="#9a653b" stroke-width="1.8"
+                          stroke-linecap="round"/>
+                    <g transform="translate(19 0)">
+                      <g transform="rotate(-130)">
+                        <animateTransform attributeName="transform" type="rotate"
+                                          values="-130.00;-118.28;-90.00;-61.72;-50.00;-61.72;-90.00;-118.28;-130.00"
+                                          keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"
+                                          dur="1.8s" repeatCount="indefinite"/>
+                        <path d="M-5-2 Q0-4 5-2 L4 3 H-4Z"
+                              fill="#f4c95d" stroke="#6e512f" stroke-width="1.15"
+                              stroke-linejoin="round"/>
+                        <path d="M-3-1.5V2.5 M0-2V2.8 M3-1.5V2.5"
+                              stroke="#d59e32" stroke-width=".7" stroke-linecap="round"/>
+                      </g>
+                      </g>
+                    </g>
+                  </g>
+                  <circle cx="0" cy="0" r="1.45"
+                          fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <g transform="translate(35.5 99.4)">
+          <g transform="rotate(107.41)">
+            <animateTransform attributeName="transform" type="rotate"
+                              values="107.41;105.56;95.44;94.92;93.61;94.92;95.44;105.56;107.41"
+                              keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"
+                              dur="1.8s" repeatCount="indefinite"/>
+            <line x1="0" y1="0" x2="8" y2="0"
+                  stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+            <g transform="translate(8 0)">
+              <g transform="rotate(-99.79)">
+                <animateTransform attributeName="transform" type="rotate"
+                                  values="-99.79;-112.87;-120.31;-104.13;-88.52;-104.13;-120.31;-112.87;-99.79"
+                                  keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"
+                                  dur="1.8s" repeatCount="indefinite"/>
+                <line x1="0" y1="0" x2="8" y2="0"
+                      stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+                <g transform="translate(8 0)">
+                  <circle cx="0" cy="0" r="1.45"
+                          fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+
+      </g>
+    </g>
+  </g>
+
+  <g id="j-hammer-worker" transform="translate(110 101) scale(.5)">
+    <g fill="none" stroke="#364154" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-2 0-4 5-5 10 M2 0 4 5 5 10"
+            stroke="#364154" stroke-width="2.2"/>
+      <path d="M-7 10H-4 M4 10H7" stroke="#273142" stroke-width="2.6"/>
+      <path d="M-4-13Q0-16 4-13L3 0H-3Z"
+            fill="#5f87d8" stroke="#364154" stroke-width="1.2"/>
+      <path d="M-4-6H-1V-2H-4Z"
+            fill="#405f9d" stroke="#364154" stroke-width=".8"/>
+
+      <g id="j-nail-arm" transform="translate(2 -10)">
+        <g transform="rotate(178.48)">
+          <animateTransform attributeName="transform" type="rotate"
+                            values="178.48;178.48;2.19;2.19;178.48;178.48;178.48"
+                            keyTimes="0;.1;.18;.55;.62;.9;1"
+                            dur="10s" repeatCount="indefinite"/>
+          <line x1="0" y1="0" x2="9.5" y2="0"
+                stroke="#364154" stroke-width="2.2"/>
+          <g transform="translate(9.5 0)">
+            <g transform="rotate(-123.83)">
+              <animateTransform attributeName="transform" type="rotate"
+                                values="-123.83;-123.83;-63.87;-63.87;-123.83;-123.83;-123.83"
+                                keyTimes="0;.1;.18;.55;.62;.9;1"
+                                dur="10s" repeatCount="indefinite"/>
+              <line x1="0" y1="0" x2="9.5" y2="0"
+                    stroke="#364154" stroke-width="2.2"/>
+              <g transform="translate(9.5 0)">
+                <g transform="rotate(-54.65)">
+                  <animateTransform attributeName="transform" type="rotate"
+                                    values="-54.65;-54.65;61.68;61.68;-54.65;-54.65;-54.65"
+                                    keyTimes="0;.1;.18;.55;.62;.9;1"
+                                    dur="10s" repeatCount="indefinite"/>
+                  <circle cx="0" cy="0" r="1.4"
+                          fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                  <g opacity="0">
+                    <animate attributeName="opacity"
+                             values="0;0;1;1;0;0"
+                             keyTimes="0;.08;.1;.454;.455;1"
+                             dur="10s" repeatCount="indefinite"/>
+                    <path d="M-4 0H0" stroke="#b8c1cb" stroke-width=".8"/>
+                    <path d="M-4-1V1" stroke="#e2e7ed" stroke-width=".9"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <g id="j-inspection-head">
+        <animateTransform attributeName="transform" type="translate"
+                          values="0 0;0 0;5 0;5 0;0 0;0 0"
+                          keyTimes="0;.65;.73;.85;.93;1"
+                          dur="10s" repeatCount="indefinite"/>
+        <g transform="rotate(0 0 -18)">
+          <animateTransform attributeName="transform" type="rotate"
+                            values="0 0 -18;0 0 -18;12 0 -18;12 0 -18;0 0 -18;0 0 -18"
+                            keyTimes="0;.65;.73;.85;.93;1"
+                            dur="10s" repeatCount="indefinite"/>
+          <circle cx="0" cy="-18" r="5"
+                  fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+          <path d="M-4.8-18.8a5 5 0 0 1 9.6 0c-2.6-1.2-7-1.2-9.6 0Z"
+                fill="#6b4631" stroke="none"/>
+          <circle cx="2.2" cy="-19" r=".55" fill="#364154" stroke="none"/>
+          <path d="M4.2-18.3 6-17.2 4.2-16.5Z"
+                fill="#ffd7aa" stroke="#364154" stroke-width=".7"/>
+          <path d="M2.2-15.5q1 .8 2-.1" stroke="#364154" stroke-width="1.2"/>
+        </g>
+      </g>
+
+      <g id="j-hammer-arm" transform="translate(4 -9)">
+        <g transform="rotate(140.24)">
+          <animateTransform attributeName="transform" type="rotate"
+                            values="140.24;11.39;2.30;11.39;2.30;11.39;2.30;140.24;140.24"
+                            keyTimes="0;.24;.255;.34;.355;.44;.455;.58;1"
+                            dur="10s" repeatCount="indefinite"/>
+          <line x1="0" y1="0" x2="9.5" y2="0"
+                stroke="#364154" stroke-width="2.2"/>
+          <g transform="translate(9.5 0)">
+            <g transform="rotate(-128.56)">
+              <animateTransform attributeName="transform" type="rotate"
+                                values="-128.56;-135.39;-101.34;-135.39;-101.34;-135.39;-101.34;-128.56;-128.56"
+                                keyTimes="0;.24;.255;.34;.355;.44;.455;.58;1"
+                                dur="10s" repeatCount="indefinite"/>
+              <line x1="0" y1="0" x2="9.5" y2="0"
+                    stroke="#364154" stroke-width="2.2"/>
+              <g transform="translate(9.5 0)">
+                <g transform="rotate(78.31)">
+                  <animateTransform attributeName="transform" type="rotate"
+                                    values="78.31;44.01;99.04;44.01;99.04;44.01;99.04;78.31;78.31"
+                                    keyTimes="0;.24;.255;.34;.355;.44;.455;.58;1"
+                                    dur="10s" repeatCount="indefinite"/>
+                  <circle cx="0" cy="0" r="1.4"
+                          fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                  <path d="M0 0H4" stroke="#8b633f" stroke-width="1.2"/>
+                  <path d="M4-2V2" stroke="#596575" stroke-width="2.4"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <circle cx="16" cy="-18" r=".8" fill="#dce3ea" opacity="0">
+        <animate attributeName="opacity"
+                 values="0;0;1;1;0;0"
+                 keyTimes="0;.254;.255;.454;.455;1"
+                 dur="10s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M15.3-18H16.7 M16-18.7V-17.3"
+            stroke="#6f7885" stroke-width=".55" opacity="0">
+        <animate attributeName="opacity"
+                 values="0;0;1;1;0;0"
+                 keyTimes="0;.254;.255;.454;.455;1"
+                 dur="10s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+
+  <g id="top-travel" transform="translate(-36 0)">
+    <animateTransform attributeName="transform" type="translate"
+                      values="-36 0;-36 0;-20 0;-20 0;-4 0;-4 0;12 0;12 0;28 0;28 0;12 0;12 0;-4 0;-4 0;-20 0;-20 0;-36 0"
+                      keyTimes="0;.083333;.125;.208333;.25;.333333;.375;.458333;.5;.583333;.625;.708333;.75;.833333;.875;.958333;1"
+                      dur="19.2s" repeatCount="indefinite"/>
+    <g transform="translate(118 31) scale(.5) translate(-118 -31)">
+      <g id="kneeling-shuffle">
+        <animateTransform attributeName="transform" type="translate"
+                          values="0 0;0 0;0 -2;0 0;0 0;0 -2;0 0"
+                          keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                          dur="4.8s" repeatCount="indefinite"/>
+        <g id="top-caretaker" class="top-bob"
+       fill="none" stroke="#364154" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round">
+      <g id="bucket">
+         <path d="M100 26h8l-.9 4.2h-6.2Z"
+              fill="#8dd8f8" stroke="#364154" stroke-width="1.1" stroke-linejoin="round"/>
+         <path class="fine-line" d="M101 26q3-4 6 0" stroke-width="1.35"/>
+         <path d="M101.5 27.2h6" stroke="#fff" stroke-width=".8" opacity=".75"/>
+      </g>
+
+       <g id="kneeling-legs">
+         <g transform="translate(114.5 26.2)">
+           <g transform="rotate(135.96)">
+             <animateTransform attributeName="transform" type="rotate"
+                               values="135.96;135.96;155;135.96;135.96;100;135.96"
+                               keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                               dur="4.8s" repeatCount="indefinite"/>
+             <line x1="0" y1="0" x2="4.172" y2="0"
+                   stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+             <g transform="translate(4.172 0)">
+               <g transform="rotate(-124.65)">
+                 <animateTransform attributeName="transform" type="rotate"
+                                   values="-124.65;-124.65;-145;-124.65;-124.65;-75;-124.65"
+                                   keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                                   dur="4.8s" repeatCount="indefinite"/>
+                 <line x1="0" y1="0" x2="4.589" y2="0"
+                       stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+                 <g transform="translate(4.589 0)">
+                   <g transform="rotate(-11.31)">
+                     <animateTransform attributeName="transform" type="rotate"
+                                       values="-11.31;-11.31;-10;-11.31;-11.31;-25;-11.31"
+                                       keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                                       dur="4.8s" repeatCount="indefinite"/>
+                     <path d="M-.5 .2H2.5" stroke="#273142" stroke-width="2.6"
+                           stroke-linecap="round"/>
+                   </g>
+                 </g>
+               </g>
+             </g>
+           </g>
+         </g>
+
+         <g transform="translate(117.5 26.2)">
+           <g transform="rotate(45)">
+             <animateTransform attributeName="transform" type="rotate"
+                               values="45;45;10;45;45;80;45"
+                               keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                               dur="4.8s" repeatCount="indefinite"/>
+             <line x1="0" y1="0" x2="3.536" y2="0"
+                   stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+             <g transform="translate(3.536 0)">
+               <g transform="rotate(-17.53)">
+                 <animateTransform attributeName="transform" type="rotate"
+                                   values="-17.53;-17.53;60;-17.53;-17.53;-70;-17.53"
+                                   keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                                   dur="4.8s" repeatCount="indefinite"/>
+                 <line x1="0" y1="0" x2="2.818" y2="0"
+                       stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+                 <g transform="translate(2.818 0)">
+                   <g transform="rotate(-27.47)">
+                     <animateTransform attributeName="transform" type="rotate"
+                                       values="-27.47;-27.47;-70;-27.47;-27.47;-10;-27.47"
+                                       keyTimes="0;.333333;.416667;.5;.833333;.916667;1"
+                                       dur="4.8s" repeatCount="indefinite"/>
+                     <path d="M-.5 .2H2.5" stroke="#273142" stroke-width="2.6"
+                           stroke-linecap="round"/>
+                   </g>
+                 </g>
+               </g>
+             </g>
+           </g>
+         </g>
+       </g>
+       <path d="M111.5 19 Q116 17 120 19 L119 27 H113Z"
+            fill="#6fcf97" stroke="#364154" stroke-width="1.15" stroke-linejoin="round"/>
+       <path class="figure-line" d="M113 21 109.5 23"/>
+       <path class="figure-line" d="M109.5 23 106 25"/>
+       <circle class="skin" cx="106" cy="25" r="1.35"
+              fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+       <circle class="skin" cx="116" cy="13.5" r="4.8"
+              fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+       <path d="M111.3 12.8a4.8 4.8 0 0 1 9.4 0c-2.5-1.2-6.9-1.2-9.4 0Z"
+            fill="#8a5a3b" stroke="none"/>
+       <circle class="eye" cx="114.4" cy="13.5" r=".5" fill="#364154" stroke="none"/>
+       <circle class="eye" cx="117.6" cy="13.5" r=".5" fill="#364154" stroke="none"/>
+       <path class="fine-line" d="M114.5 15.7q1.6 1 3.1-.1" stroke-width="1.35"/>
+
+       <g id="wiping-arm" transform="translate(119 21)">
+         <g transform="rotate(102.49)">
+           <animateTransform attributeName="transform" type="rotate"
+                             values="102.49;90.94;63.03;34.02;22.95;34.02;63.03;90.94;102.49;102.49"
+                             keyTimes="0;.083333;.166667;.25;.333333;.416667;.5;.583333;.666667;1"
+                             dur="2.4s" repeatCount="indefinite"/>
+           <line x1="0" y1="0" x2="7" y2="0"
+                 stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+           <g transform="translate(7 0)">
+             <g transform="rotate(73.94)">
+               <animateTransform attributeName="transform" type="rotate"
+                                 values="73.94;86.76;108.83;119.16;119.50;119.16;108.83;86.76;73.94;73.94"
+                                 keyTimes="0;.083333;.166667;.25;.333333;.416667;.5;.583333;.666667;1"
+                                 dur="2.4s" repeatCount="indefinite"/>
+               <line x1="0" y1="0" x2="7.5" y2="0"
+                     stroke="#364154" stroke-width="2.2" stroke-linecap="round"/>
+               <g transform="translate(7.5 0)">
+                 <g id="wiping-tool" transform="rotate(-176.44)">
+                   <animateTransform attributeName="transform" type="rotate"
+                                     values="-176.44;-177.70;-171.87;-153.18;-142.45;-153.18;-171.87;-177.70;-176.44;-176.44"
+                                     keyTimes="0;.083333;.166667;.25;.333333;.416667;.5;.583333;.666667;1"
+                                     dur="2.4s" repeatCount="indefinite"/>
+                   <circle cx="0" cy="0" r="1.4"
+                           fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+                   <path d="M -3.5 .2 Q .3 -1.3 3.8 .7 L 3 3.5 H -3 Z"
+                         fill="#f5c84c" stroke="#8d6a22" stroke-width=".9"
+                         stroke-linejoin="round"/>
+                 </g>
+               </g>
+             </g>
+           </g>
+        </g>
+      </g>
+      </g>
+    </g>
+
+    <g class="heart">
+        <path d="M98 8 C94.8 4.8 90.5 8.8 98 14 C105.5 8.8 101.2 4.8 98 8Z"
+              fill="#f26b7a" stroke="#b84557" stroke-width=".8"/>
+      </g>
+    </g>
+  </g>
+
+  <g transform="translate(169 125) scale(.6 .82) translate(-178.3 -126)">
+    <g id="ladder">
+      <path d="M172.5 96.5 166 126 M184.2 96.5 190.5 126"
+            fill="none" stroke="#8a98a9" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M170.7 104.5h15.3 M169 112.5h18.8 M167.4 120.5h22"
+            fill="none" stroke="#aeb9c6" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g transform="translate(158 91) scale(.5) translate(-158 -81)">
+    <g id="polisher" class="polisher-bob"
+       fill="none" stroke="#364154" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path class="figure-line" d="M179.4 89 177.5 95"/>
+      <path class="figure-line" d="M177.5 95 176.5 101.5"/>
+      <path class="figure-line" d="M182.5 89 183.5 95"/>
+      <path class="figure-line" d="M183.5 95 184.5 101.5"/>
+      <path class="shoe" d="M173.6 102h3.9 M184 102h3.8" stroke-width="2.6"/>
+      <path d="M176.2 75.3 Q181 72.8 185.4 75.5 L184 90 H178Z"
+            fill="#7d78d7" stroke="#364154" stroke-width="1.2" stroke-linejoin="round"/>
+      <path class="figure-line" d="M178 78.2 169 80.2"/>
+      <path class="figure-line" d="M169 80.2 162.2 81.2"/>
+      <path class="figure-line" d="M183 78.8 172 80.6"/>
+      <path class="figure-line" d="M172 80.6 162.2 82"/>
+      <circle class="skin" cx="162" cy="81.5" r="1.4"
+              fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+      <circle class="skin" cx="181" cy="68.8" r="5.2"
+              fill="#ffd7aa" stroke="#364154" stroke-width="1.25"/>
+      <path d="M175.9 68.1a5.2 5.2 0 0 1 10.2 0c-2.7-1.3-7.5-1.3-10.2 0Z"
+            fill="#6a432c" stroke="none"/>
+      <circle class="eye" cx="179.2" cy="69" r=".55" fill="#364154" stroke="none"/>
+      <circle class="eye" cx="182.7" cy="69" r=".55" fill="#364154" stroke="none"/>
+      <path class="fine-line" d="M179.4 71.3q1.6 1 3.1-.1" stroke-width="1.35"/>
+      <path d="M164.5 85 Q171 87 172.5 98.2"
+            fill="none" stroke="#526174" stroke-width="1.1" stroke-linecap="round"/>
+
+      <g class="polisher-spin">
+        <circle cx="158" cy="81" r="7" fill="#dff6ff"
+                stroke="#4e819e" stroke-width="1.2"/>
+        <path d="M158 74v14 M151 81h14 M153 76l10 10 M163 76l-10 10"
+              stroke="#7cc8e8" stroke-width=".9" stroke-linecap="round"/>
+        <circle cx="158" cy="81" r="1.4" fill="#4e819e"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="sparkle" style="transform-origin: 136px 27px"
+     fill="#fff7a8" filter="url(#sparkle-glow)">
+    <path d="M136 21.5 137.4 25.6 141.5 27 137.4 28.4 136 32.5 134.6 28.4 130.5 27 134.6 25.6Z"/>
+  </g>
+  <g class="sparkle two" style="transform-origin: 148px 68px"
+     fill="#fff" filter="url(#sparkle-glow)">
+    <path d="M148 63.5 149.1 66.9 152.5 68 149.1 69.1 148 72.5 146.9 69.1 143.5 68 146.9 66.9Z"/>
+  </g>
+  <g class="sparkle three" style="transform-origin: 153px 94px"
+     fill="#dff7ff" filter="url(#sparkle-glow)">
+    <path d="M153 90 154 93 157 94 154 95 153 98 152 95 149 94 152 93Z"/>
+  </g>
+</svg>
