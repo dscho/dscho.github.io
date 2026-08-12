@@ -94,6 +94,69 @@
 				perspective: 1600px;
 			}
 
+			.paper-stack-title-layer {
+				position: absolute;
+				inset: 0;
+				z-index: 10;
+				pointer-events: none;
+			}
+
+			.paper-stack-title {
+				--title-x: 0px;
+				--title-y: 0px;
+				--title-rotation: 0deg;
+				position: absolute;
+				left: 50%;
+				top: 8px;
+				overflow: hidden;
+				background: #fff;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+				transform: translateX(-50%)
+					translate(var(--title-x), var(--title-y))
+					rotate(var(--title-rotation));
+				transform-origin: center;
+			}
+
+			.paper-stack-title[data-stack-position="0"] {
+				box-shadow: none;
+			}
+
+			.paper-stack-title[data-stack-position="1"] {
+				--title-x: -35px;
+				--title-y: 15px;
+				--title-rotation: -2.5deg;
+			}
+
+			.paper-stack-title[data-stack-position="2"] {
+				--title-x: 28px;
+				--title-y: 7px;
+				--title-rotation: 1.4deg;
+			}
+
+			.paper-stack-title[data-stack-position="3"] {
+				--title-x: -12px;
+				--title-y: 16px;
+				--title-rotation: -2deg;
+			}
+
+			.paper-stack-title[data-stack-position="4"] {
+				--title-x: 12px;
+				--title-y: 6px;
+				--title-rotation: 3.2deg;
+			}
+
+			.paper-stack-title[data-stack-position="5"] {
+				--title-x: -22px;
+				--title-y: 12px;
+				--title-rotation: -1deg;
+			}
+
+			.paper-stack-title[data-stack-position="6"] {
+				--title-x: 2px;
+				--title-y: 1px;
+				--title-rotation: 1.5deg;
+			}
+
 			.reveal .paper-stack-paper {
 				--paper-x: 0px;
 				--paper-y: 0px;
@@ -291,31 +354,73 @@
 
 					<section
 						class="paper-stack-slide"
+						data-title-crop="249,438,331,48"
 					>
 						<img
 							class="paper-stack-source"
 							src="img/Screenshot 2026-08-11 at 15-55-23 Freddie Mercury-acoustic analysis of speaking fundamental frequency vibrato and subharmonics Logopedics Phoniatrics Vocology Vol 42 No 1 - Get Access.png"
 							alt="Freddie Mercury: acoustic analysis of speaking fundamental frequency, vibrato, and subharmonics"
+							doi="10.3109/14015439.2016.1156737"
 						/>
 					</section>
 
 					<section
 						class="paper-stack-slide"
+						data-title-crop="342,220,191,28"
 					>
 						<img
 							class="paper-stack-source"
 							src="img/Screenshot 2026-08-11 at 15-55-30 'Monkey yodels'-frequency jumps in New World monkey vocalizations greatly surpass human vocal register transitions Philosophical Transactions of the Royal Society B The Royal Society.png"
 							alt="Monkey yodels: frequency jumps in New World monkey vocalizations"
+							doi="10.1098/rstb.2024.0005"
 						/>
 					</section>
 
 					<section
 						class="paper-stack-slide"
+						data-title-crop="257,239,249,30"
 					>
 						<img
 							class="paper-stack-source"
 							src="img/Screenshot 2026-08-11 at 15-55-36 Looks that kill Facial metrics and international conflict 1947-2010 Politics and the Life Sciences Cambridge Core.png"
 							alt="Looks that kill: facial metrics and international conflict, 1947-2010"
+							doi="10.1017/pls.2026.10024"
+						/>
+					</section>
+
+					<section
+						class="paper-stack-slide"
+						data-title-crop="24,219,526,45"
+					>
+						<img
+							class="paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-55-44 The water bottle flipping experiment a quantitative comparison between experiments and numerical simulations - IOPscience.png"
+							alt="The water bottle flipping experiment"
+							doi="10.1088/1361-6404/ad6e43"
+						/>
+					</section>
+
+					<section
+						class="paper-stack-slide"
+						data-title-crop="465,372,375,30"
+					>
+						<img
+							class="paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-55-51 Are Pebble Pile Planetesimals Doomed Monthly Notices of the Royal Astronomical Society Oxford Academic.png"
+							alt="Are Pebble Pile Planetesimals Doomed?"
+							doi="10.1093/mnras/stz107"
+						/>
+					</section>
+
+					<section
+						class="paper-stack-slide"
+						data-title-crop="80,599,499,50"
+					>
+						<img
+							class="paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-55-58 SE - Where curling stones collide with rock mechanics cyclical damage accumulation and fatigue in granitoids.png"
+							alt="Where curling stones collide with rock mechanics"
+							doi="10.5194/se-17-429-2026"
 						/>
 					</section>
 				</section>
@@ -697,7 +802,7 @@
 			const PaperStack = {
 				id: "paper-stack",
 
-				init(deck) {
+				async init(deck) {
 					const stacks = deck
 						.getRevealElement()
 						.querySelectorAll(".paper-stack-sequence");
@@ -715,6 +820,17 @@
 								"Each paper stack slide requires a source image",
 							);
 						}
+						await Promise.all(
+							sources.map(async (source) => {
+								if (!source.complete || !source.naturalWidth) {
+									await source.decode();
+								}
+							}),
+						);
+
+						const crops = steps.map((step) =>
+							PaperTitleMorph.parseCrop(step.dataset.titleCrop),
+						);
 
 						for (let stepIndex = 1; stepIndex < steps.length; stepIndex++) {
 							const canvas = document.createElement("div");
@@ -727,7 +843,7 @@
 							) {
 								const paper = sources[paperIndex].cloneNode();
 								paper.className = "paper-stack-paper";
-								paper.dataset.stackPosition = String(paperIndex % 6);
+								paper.dataset.stackPosition = String(paperIndex % 7);
 
 								if (stepIndex === 1 && paperIndex === 0) {
 									paper.classList.add("paper-stack-paper-first");
@@ -743,9 +859,36 @@
 								canvas.append(paper);
 							}
 
-							steps[stepIndex].replaceChildren(canvas);
+							steps[stepIndex].replaceChildren(
+								canvas,
+								this.createTitleLayer(sources, crops, stepIndex),
+							);
 						}
 					}
+				},
+
+				createTitleLayer(sources, crops, stepIndex) {
+					const layer = document.createElement("div");
+					layer.className = "paper-stack-title-layer";
+					layer.setAttribute("aria-hidden", "true");
+
+					for (let index = 0; index <= stepIndex; index++) {
+						const crop = crops[index];
+						const title = document.createElement("div");
+						title.className = "paper-stack-title";
+						title.dataset.stackPosition = String(index % 7);
+						title.style.width = `${
+							(crop.width * PaperTitleMorph.destination.height) /
+							crop.height
+						}px`;
+						title.style.height = `${PaperTitleMorph.destination.height}px`;
+						title.append(
+							PaperTitleMorph.createRaster(sources[index], crop, false),
+						);
+						layer.append(title);
+					}
+
+					return layer;
 				},
 			};
 
