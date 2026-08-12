@@ -82,6 +82,36 @@
 				height: 100%;
 			}
 
+			.reveal .paper-doi-link {
+				position: absolute;
+				left: 24px;
+				bottom: 22px;
+				z-index: 20;
+				padding: 9px 14px 8px;
+				border: 1px solid rgba(0, 0, 0, 0.14);
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.92);
+				box-shadow: 0 5px 18px rgba(0, 0, 0, 0.16);
+				color: #222;
+				font-size: 16px;
+				font-weight: 500;
+				line-height: 1;
+				text-decoration: none;
+				backdrop-filter: blur(8px);
+				transition:
+					background 160ms ease,
+					box-shadow 160ms ease,
+					transform 160ms ease;
+			}
+
+			.reveal .paper-doi-link:hover,
+			.reveal .paper-doi-link:focus-visible {
+				background: #fff;
+				box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);
+				color: #000;
+				transform: translateY(-1px);
+			}
+
 			.reveal .slides section.paper-stack-slide {
 				height: 100%;
 				padding: 0;
@@ -742,6 +772,21 @@
 		<script src="dist/reveal.js"></script>
 		<script src="dist/plugin/notes.js"></script>
 		<script>
+			const createDoiLink = (image) => {
+				const doi = image.getAttribute("doi");
+				if (!doi) {
+					throw new Error("Paper screenshots require a DOI");
+				}
+
+				const link = document.createElement("a");
+				link.className = "paper-doi-link";
+				link.href = `https://doi.org/${doi}`;
+				link.target = "_blank";
+				link.rel = "noopener noreferrer";
+				link.textContent = `DOI: ${doi}`;
+				return link;
+			};
+
 			const PaperTitleMorph = {
 				id: "paper-title-morph",
 
@@ -815,7 +860,7 @@
 					sourceFrame.setAttribute("aria-hidden", "true");
 					sourceFrame.append(raster);
 
-					slide.append(veil, sourceFrame);
+					slide.append(veil, sourceFrame, createDoiLink(image));
 					this.states.set(slide, {
 						slide,
 						image,
@@ -1180,6 +1225,7 @@
 							steps[stepIndex].replaceChildren(
 								canvas,
 								this.createTitleLayer(sources, crops, stepIndex),
+								createDoiLink(sources[stepIndex]),
 							);
 						}
 						this.stackStates.push({ steps });
