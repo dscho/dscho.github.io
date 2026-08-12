@@ -241,15 +241,22 @@
 				visibility: hidden;
 			}
 
-			.paper-stack-forward .paper-stack-paper-new {
-				animation: add-paper-to-stack 1200ms
-					cubic-bezier(0.2, 0.7, 0.2, 1) 160ms both;
+			.paper-stack-forward-pending .paper-stack-paper-new,
+			.paper-stack-forward-pending .paper-stack-title-new {
+				visibility: hidden;
 			}
 
-			.paper-stack-forward
-				.paper-stack-paper-first
-				~ .paper-stack-paper-new {
-				animation-delay: 360ms;
+			.paper-stack-backward-pending .paper-stack-return-canvas,
+			.paper-stack-backward-pending .paper-stack-paper-returning,
+			.paper-stack-backward-pending .paper-stack-paper-return-base,
+			.paper-stack-backward-pending .paper-stack-title-returning {
+				visibility: visible;
+			}
+
+			.paper-stack-forward .paper-stack-paper-new {
+				visibility: visible;
+				animation: add-paper-to-stack 1200ms
+					cubic-bezier(0.2, 0.7, 0.2, 1) both;
 			}
 
 			.paper-stack-forward .paper-stack-paper-first {
@@ -258,8 +265,9 @@
 			}
 
 			.paper-stack-forward .paper-stack-title-new {
-				animation: add-title-to-stack 900ms
-					cubic-bezier(0.2, 0.7, 0.2, 1) 620ms both;
+				visibility: visible;
+				animation: add-title-to-stack 1200ms
+					cubic-bezier(0.2, 0.7, 0.2, 1) both;
 			}
 
 			.paper-stack-backward .paper-stack-paper-returning {
@@ -314,7 +322,7 @@
 
 			@keyframes add-paper-to-stack {
 				from {
-					transform: translate(-50%, -50%) translate3d(760px, 560px, 180px)
+					transform: translate(-50%, -50%) translate3d(1100px, 800px, 180px)
 						rotate(8deg) scale(0.68);
 				}
 
@@ -353,14 +361,14 @@
 
 				to {
 					visibility: hidden;
-					transform: translate(-50%, -50%) translate3d(760px, 560px, 180px)
+					transform: translate(-50%, -50%) translate3d(1100px, 800px, 180px)
 						rotate(8deg) scale(0.68);
 				}
 			}
 
 			@keyframes add-title-to-stack {
 				from {
-					transform: translateX(-50%) translate(650px, 700px) rotate(8deg)
+					transform: translateX(-50%) translate(1050px, 820px) rotate(8deg)
 						scale(0.75);
 				}
 
@@ -380,7 +388,7 @@
 
 				to {
 					visibility: hidden;
-					transform: translateX(-50%) translate(650px, 700px) rotate(8deg)
+					transform: translateX(-50%) translate(1050px, 820px) rotate(8deg)
 						scale(0.75);
 				}
 			}
@@ -1026,6 +1034,9 @@
 					deck.on("slidechanged", ({ previousSlide, currentSlide }) =>
 						this.handleSlideChange(previousSlide, currentSlide),
 					);
+					deck.on("ready", ({ currentSlide }) =>
+						this.prepareAdjacentSlides(currentSlide),
+					);
 				},
 
 				prepareReturnSlide(slide, sources, crops) {
@@ -1109,25 +1120,51 @@
 							step.classList.remove(
 								"paper-stack-forward",
 								"paper-stack-backward",
+								"paper-stack-forward-pending",
+								"paper-stack-backward-pending",
 							);
 						}
 					}
 
 					const state = this.stackStates.find(
-						({ steps }) =>
-							steps.includes(previousSlide) && steps.includes(currentSlide),
+						({ steps }) => steps.includes(currentSlide),
 					);
 					if (!state) return;
 
 					const previousIndex = state.steps.indexOf(previousSlide);
 					const currentIndex = state.steps.indexOf(currentSlide);
-					if (Math.abs(currentIndex - previousIndex) !== 1) return;
+					if (Math.abs(currentIndex - previousIndex) === 1) {
+						void currentSlide.offsetWidth;
+						currentSlide.classList.add(
+							currentIndex > previousIndex
+								? "paper-stack-forward"
+								: "paper-stack-backward",
+						);
+					}
+					this.prepareAdjacentSlides(currentSlide);
+				},
 
-					void currentSlide.offsetWidth;
-					currentSlide.classList.add(
-						currentIndex > previousIndex
-							? "paper-stack-forward"
-							: "paper-stack-backward",
+				prepareAdjacentSlides(currentSlide) {
+					for (const { steps } of this.stackStates) {
+						for (const step of steps) {
+							step.classList.remove(
+								"paper-stack-forward-pending",
+								"paper-stack-backward-pending",
+							);
+						}
+					}
+
+					const state = this.stackStates.find(({ steps }) =>
+						steps.includes(currentSlide),
+					);
+					if (!state) return;
+
+					const currentIndex = state.steps.indexOf(currentSlide);
+					state.steps[currentIndex + 1]?.classList.add(
+						"paper-stack-forward-pending",
+					);
+					state.steps[currentIndex - 1]?.classList.add(
+						"paper-stack-backward-pending",
 					);
 				},
 			};
