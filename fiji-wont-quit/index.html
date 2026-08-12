@@ -94,6 +94,12 @@
 				perspective: 1600px;
 			}
 
+			.paper-stack-return-canvas {
+				z-index: 2;
+				visibility: hidden;
+				background: #fff;
+			}
+
 			.paper-stack-title-layer {
 				position: absolute;
 				inset: 0;
@@ -115,6 +121,7 @@
 					translate(var(--title-x), var(--title-y))
 					rotate(var(--title-rotation));
 				transform-origin: center;
+				will-change: transform;
 			}
 
 			.paper-stack-title[data-stack-position="0"] {
@@ -188,7 +195,7 @@
 
 			.paper-stack-paper[data-stack-position="0"] {
 				--paper-x: -42px;
-				--paper-y: 19px;
+				--paper-y: 42px;
 				--paper-rotation: -4.2deg;
 				--paper-scale: 0.79;
 			}
@@ -228,14 +235,53 @@
 				--paper-scale: 0.815;
 			}
 
-			.paper-stack-slide.present .paper-stack-paper-new {
-				animation: add-paper-to-stack 1100ms
-					cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+			.paper-stack-paper-returning,
+			.paper-stack-paper-return-base,
+			.paper-stack-title-returning {
+				visibility: hidden;
 			}
 
-			.paper-stack-slide.present .paper-stack-paper-first {
-				animation: place-first-paper 1000ms
-					cubic-bezier(0.16, 1, 0.3, 1) both;
+			.paper-stack-forward .paper-stack-paper-new {
+				animation: add-paper-to-stack 1200ms
+					cubic-bezier(0.2, 0.7, 0.2, 1) 160ms both;
+			}
+
+			.paper-stack-forward
+				.paper-stack-paper-first
+				~ .paper-stack-paper-new {
+				animation-delay: 360ms;
+			}
+
+			.paper-stack-forward .paper-stack-paper-first {
+				animation: place-first-paper 1400ms
+					cubic-bezier(0.22, 0.61, 0.36, 1) both;
+			}
+
+			.paper-stack-forward .paper-stack-title-new {
+				animation: add-title-to-stack 900ms
+					cubic-bezier(0.2, 0.7, 0.2, 1) 620ms both;
+			}
+
+			.paper-stack-backward .paper-stack-paper-returning {
+				visibility: visible;
+				animation: remove-paper-from-stack 1000ms
+					cubic-bezier(0.4, 0, 0.8, 0.3) both;
+			}
+
+			.paper-stack-backward .paper-stack-title-returning {
+				visibility: visible;
+				animation: remove-title-from-stack 800ms
+					cubic-bezier(0.4, 0, 0.8, 0.3) both;
+			}
+
+			.paper-stack-backward .paper-stack-return-canvas,
+			.paper-stack-backward .paper-stack-paper-return-base {
+				visibility: visible;
+			}
+
+			.paper-stack-backward .paper-stack-paper-return-base {
+				animation: restore-first-paper 1100ms
+					cubic-bezier(0.4, 0, 0.2, 1) both;
 			}
 
 			@keyframes place-first-paper {
@@ -244,6 +290,15 @@
 					box-shadow: none;
 					transform: translate(-50%, -50%) translate3d(0, 44px, 0)
 						rotate(0deg) scale(0.903);
+				}
+
+				72% {
+					border-color: #fff;
+					box-shadow:
+						0 20px 42px rgba(0, 0, 0, 0.22),
+						0 4px 10px rgba(0, 0, 0, 0.18);
+					transform: translate(-50%, -50%)
+						translate3d(-48px, 54px, -75px) rotate(-4.7deg) scale(0.785);
 				}
 
 				to {
@@ -259,8 +314,8 @@
 
 			@keyframes add-paper-to-stack {
 				from {
-					transform: translate(-50%, -50%) translate3d(0, 120px, 180px)
-						rotate(0deg) scale(0.98);
+					transform: translate(-50%, -50%) translate3d(760px, 560px, 180px)
+						rotate(8deg) scale(0.68);
 				}
 
 				to {
@@ -270,9 +325,78 @@
 				}
 			}
 
+			@keyframes restore-first-paper {
+				from {
+					border-color: #fff;
+					box-shadow:
+						0 20px 42px rgba(0, 0, 0, 0.22),
+						0 4px 10px rgba(0, 0, 0, 0.18);
+					transform: translate(-50%, -50%)
+						translate3d(var(--paper-x), var(--paper-y), var(--paper-z))
+						rotate(var(--paper-rotation)) scale(var(--paper-scale));
+				}
+
+				to {
+					border-color: transparent;
+					box-shadow: none;
+					transform: translate(-50%, -50%) translate3d(0, 44px, 0)
+						rotate(0deg) scale(0.903);
+				}
+			}
+
+			@keyframes remove-paper-from-stack {
+				from {
+					transform: translate(-50%, -50%)
+						translate3d(var(--paper-x), var(--paper-y), var(--paper-z))
+						rotate(var(--paper-rotation)) scale(var(--paper-scale));
+				}
+
+				to {
+					visibility: hidden;
+					transform: translate(-50%, -50%) translate3d(760px, 560px, 180px)
+						rotate(8deg) scale(0.68);
+				}
+			}
+
+			@keyframes add-title-to-stack {
+				from {
+					transform: translateX(-50%) translate(650px, 700px) rotate(8deg)
+						scale(0.75);
+				}
+
+				to {
+					transform: translateX(-50%)
+						translate(var(--title-x), var(--title-y))
+						rotate(var(--title-rotation));
+				}
+			}
+
+			@keyframes remove-title-from-stack {
+				from {
+					transform: translateX(-50%)
+						translate(var(--title-x), var(--title-y))
+						rotate(var(--title-rotation));
+				}
+
+				to {
+					visibility: hidden;
+					transform: translateX(-50%) translate(650px, 700px) rotate(8deg)
+						scale(0.75);
+				}
+			}
+
 			@media (prefers-reduced-motion: reduce) {
-				.paper-stack-slide.present .paper-stack-paper-first,
-				.paper-stack-slide.present .paper-stack-paper-new {
+				.paper-stack-forward .paper-stack-paper-first,
+				.paper-stack-forward .paper-stack-paper-new,
+				.paper-stack-forward .paper-stack-title-new {
+					animation: none;
+				}
+
+				.paper-stack-backward .paper-stack-return-canvas,
+				.paper-stack-backward .paper-stack-paper-returning,
+				.paper-stack-backward .paper-stack-paper-return-base,
+				.paper-stack-backward .paper-stack-title-returning {
+					visibility: hidden;
 					animation: none;
 				}
 			}
@@ -484,7 +608,17 @@
 					deck.on("ready", ({ currentSlide }) => this.playRaster(currentSlide));
 					deck.on("slidechanged", ({ previousSlide, currentSlide }) => {
 						this.resetRaster(previousSlide);
-						this.playRaster(currentSlide);
+						if (
+							previousSlide?.parentElement === currentSlide?.parentElement &&
+							currentSlide?.nextElementSibling === previousSlide &&
+							currentSlide.parentElement.classList.contains(
+								"paper-stack-sequence",
+							)
+						) {
+							this.showRaster(currentSlide);
+						} else {
+							this.playRaster(currentSlide);
+						}
 					});
 					deck.addKeyBinding(
 						{
@@ -764,6 +898,15 @@
 					state.slide.dataset.paperTitleState = "complete";
 				},
 
+				showRaster(slide) {
+					const state = this.states.get(slide);
+					if (!state) return;
+
+					this.resetRaster(slide);
+					this.layoutRaster(state);
+					this.finishRaster(state);
+				},
+
 				parseCrop(value) {
 					const crop = value?.split(",").map(Number);
 					if (
@@ -803,6 +946,7 @@
 				id: "paper-stack",
 
 				async init(deck) {
+					this.stackStates = [];
 					const stacks = deck
 						.getRevealElement()
 						.querySelectorAll(".paper-stack-sequence");
@@ -831,6 +975,7 @@
 						const crops = steps.map((step) =>
 							PaperTitleMorph.parseCrop(step.dataset.titleCrop),
 						);
+						this.prepareReturnSlide(steps[0], sources, crops);
 
 						for (let stepIndex = 1; stepIndex < steps.length; stepIndex++) {
 							const canvas = document.createElement("div");
@@ -841,9 +986,10 @@
 								paperIndex <= stepIndex;
 								paperIndex++
 							) {
-								const paper = sources[paperIndex].cloneNode();
-								paper.className = "paper-stack-paper";
-								paper.dataset.stackPosition = String(paperIndex % 7);
+								const paper = this.createPaper(
+									sources[paperIndex],
+									paperIndex,
+								);
 
 								if (stepIndex === 1 && paperIndex === 0) {
 									paper.classList.add("paper-stack-paper-first");
@@ -858,13 +1004,62 @@
 
 								canvas.append(paper);
 							}
+							if (stepIndex + 1 < sources.length) {
+								const returning = this.createPaper(
+									sources[stepIndex + 1],
+									stepIndex + 1,
+								);
+								returning.classList.add("paper-stack-paper-returning");
+								returning.alt = "";
+								returning.setAttribute("aria-hidden", "true");
+								canvas.append(returning);
+							}
 
 							steps[stepIndex].replaceChildren(
 								canvas,
 								this.createTitleLayer(sources, crops, stepIndex),
 							);
 						}
+						this.stackStates.push({ steps });
 					}
+
+					deck.on("slidechanged", ({ previousSlide, currentSlide }) =>
+						this.handleSlideChange(previousSlide, currentSlide),
+					);
+				},
+
+				prepareReturnSlide(slide, sources, crops) {
+					if (sources.length < 2) return;
+
+					const canvas = document.createElement("div");
+					canvas.className =
+						"paper-stack-canvas paper-stack-return-canvas";
+
+					const first = this.createPaper(sources[0], 0);
+					first.classList.add("paper-stack-paper-return-base");
+					first.alt = "";
+					first.setAttribute("aria-hidden", "true");
+
+					const returning = this.createPaper(sources[1], 1);
+					returning.classList.add("paper-stack-paper-returning");
+					returning.alt = "";
+					returning.setAttribute("aria-hidden", "true");
+					canvas.append(first, returning);
+
+					const titleLayer = document.createElement("div");
+					titleLayer.className = "paper-stack-title-layer";
+					titleLayer.setAttribute("aria-hidden", "true");
+					const title = this.createTitle(sources[1], crops[1], 1);
+					title.classList.add("paper-stack-title-returning");
+					titleLayer.append(title);
+					slide.append(canvas, titleLayer);
+				},
+
+				createPaper(source, index) {
+					const paper = source.cloneNode();
+					paper.className = "paper-stack-paper";
+					paper.dataset.stackPosition = String(index % 7);
+					return paper;
 				},
 
 				createTitleLayer(sources, crops, stepIndex) {
@@ -873,22 +1068,67 @@
 					layer.setAttribute("aria-hidden", "true");
 
 					for (let index = 0; index <= stepIndex; index++) {
-						const crop = crops[index];
-						const title = document.createElement("div");
-						title.className = "paper-stack-title";
-						title.dataset.stackPosition = String(index % 7);
-						title.style.width = `${
-							(crop.width * PaperTitleMorph.destination.height) /
-							crop.height
-						}px`;
-						title.style.height = `${PaperTitleMorph.destination.height}px`;
-						title.append(
-							PaperTitleMorph.createRaster(sources[index], crop, false),
+						const title = this.createTitle(
+							sources[index],
+							crops[index],
+							index,
 						);
+						if (index === stepIndex) {
+							title.classList.add("paper-stack-title-new");
+						}
 						layer.append(title);
+					}
+					if (stepIndex + 1 < sources.length) {
+						const returning = this.createTitle(
+							sources[stepIndex + 1],
+							crops[stepIndex + 1],
+							stepIndex + 1,
+						);
+						returning.classList.add("paper-stack-title-returning");
+						layer.append(returning);
 					}
 
 					return layer;
+				},
+
+				createTitle(source, crop, index) {
+					const title = document.createElement("div");
+					title.className = "paper-stack-title";
+					title.dataset.stackPosition = String(index % 7);
+					title.style.width = `${
+						(crop.width * PaperTitleMorph.destination.height) / crop.height
+					}px`;
+					title.style.height = `${PaperTitleMorph.destination.height}px`;
+					title.append(PaperTitleMorph.createRaster(source, crop, false));
+					return title;
+				},
+
+				handleSlideChange(previousSlide, currentSlide) {
+					for (const { steps } of this.stackStates) {
+						for (const step of steps) {
+							step.classList.remove(
+								"paper-stack-forward",
+								"paper-stack-backward",
+							);
+						}
+					}
+
+					const state = this.stackStates.find(
+						({ steps }) =>
+							steps.includes(previousSlide) && steps.includes(currentSlide),
+					);
+					if (!state) return;
+
+					const previousIndex = state.steps.indexOf(previousSlide);
+					const currentIndex = state.steps.indexOf(currentSlide);
+					if (Math.abs(currentIndex - previousIndex) !== 1) return;
+
+					void currentSlide.offsetWidth;
+					currentSlide.classList.add(
+						currentIndex > previousIndex
+							? "paper-stack-forward"
+							: "paper-stack-backward",
+					);
 				},
 			};
 
