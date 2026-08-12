@@ -82,6 +82,138 @@
 				height: 100%;
 			}
 
+			.reveal .slides section.paper-stack-slide {
+				height: 100%;
+				padding: 0;
+				overflow: hidden;
+			}
+
+			.paper-stack-canvas {
+				position: absolute;
+				inset: 0;
+				perspective: 1600px;
+			}
+
+			.reveal .paper-stack-paper {
+				--paper-x: 0px;
+				--paper-y: 0px;
+				--paper-z: -70px;
+				--paper-rotation: 0deg;
+				--paper-scale: 0.8;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				width: 100%;
+				height: 100%;
+				max-width: none;
+				max-height: none;
+				box-sizing: border-box;
+				margin: 0;
+				border: 8px solid #fff;
+				background: #fff;
+				box-shadow:
+					0 20px 42px rgba(0, 0, 0, 0.22),
+					0 4px 10px rgba(0, 0, 0, 0.18);
+				object-fit: contain;
+				transform: translate(-50%, -50%)
+					translate3d(var(--paper-x), var(--paper-y), var(--paper-z))
+					rotate(var(--paper-rotation)) scale(var(--paper-scale));
+				transform-origin: center;
+				backface-visibility: hidden;
+				will-change: transform;
+			}
+
+			.paper-stack-paper[data-stack-position="0"] {
+				--paper-x: -42px;
+				--paper-y: 19px;
+				--paper-rotation: -4.2deg;
+				--paper-scale: 0.79;
+			}
+
+			.paper-stack-paper[data-stack-position="1"] {
+				--paper-x: 25px;
+				--paper-y: -13px;
+				--paper-rotation: 3.1deg;
+				--paper-scale: 0.795;
+			}
+
+			.paper-stack-paper[data-stack-position="2"] {
+				--paper-x: -12px;
+				--paper-y: 14px;
+				--paper-rotation: -2.5deg;
+				--paper-scale: 0.8;
+			}
+
+			.paper-stack-paper[data-stack-position="3"] {
+				--paper-x: 31px;
+				--paper-y: 1px;
+				--paper-rotation: 4deg;
+				--paper-scale: 0.805;
+			}
+
+			.paper-stack-paper[data-stack-position="4"] {
+				--paper-x: -27px;
+				--paper-y: -8px;
+				--paper-rotation: -3.3deg;
+				--paper-scale: 0.81;
+			}
+
+			.paper-stack-paper[data-stack-position="5"] {
+				--paper-x: 12px;
+				--paper-y: 17px;
+				--paper-rotation: 2.2deg;
+				--paper-scale: 0.815;
+			}
+
+			.paper-stack-slide.present .paper-stack-paper-new {
+				animation: add-paper-to-stack 1100ms
+					cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+			}
+
+			.paper-stack-slide.present .paper-stack-paper-first {
+				animation: place-first-paper 1000ms
+					cubic-bezier(0.16, 1, 0.3, 1) both;
+			}
+
+			@keyframes place-first-paper {
+				from {
+					border-color: transparent;
+					box-shadow: none;
+					transform: translate(-50%, -50%) translate3d(0, 44px, 0)
+						rotate(0deg) scale(0.903);
+				}
+
+				to {
+					border-color: #fff;
+					box-shadow:
+						0 20px 42px rgba(0, 0, 0, 0.22),
+						0 4px 10px rgba(0, 0, 0, 0.18);
+					transform: translate(-50%, -50%)
+						translate3d(var(--paper-x), var(--paper-y), var(--paper-z))
+						rotate(var(--paper-rotation)) scale(var(--paper-scale));
+				}
+			}
+
+			@keyframes add-paper-to-stack {
+				from {
+					transform: translate(-50%, -50%) translate3d(0, 120px, 180px)
+						rotate(0deg) scale(0.98);
+				}
+
+				to {
+					transform: translate(-50%, -50%)
+						translate3d(var(--paper-x), var(--paper-y), var(--paper-z))
+						rotate(var(--paper-rotation)) scale(var(--paper-scale));
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.paper-stack-slide.present .paper-stack-paper-first,
+				.paper-stack-slide.present .paper-stack-paper-new {
+					animation: none;
+				}
+			}
+
 		</style>
 	</head>
 	<body>
@@ -144,13 +276,48 @@
 					/>
 				</section>
 
-				<section class="paper-title-slide" data-title-crop="333,216,503,35">
-					<img
-						class="paper-screenshot"
-						src="img/Screenshot 2026-08-11 at 15-54-59 The physics of dancing peanuts in beer Royal Society Open Science The Royal Society.png"
-						alt="The physics of dancing peanuts in beer"
-						doi="10.1098/rsos.230376"
-					/>
+				<section class="paper-stack-sequence">
+					<section
+						class="paper-title-slide"
+						data-title-crop="333,216,503,35"
+					>
+						<img
+							class="paper-screenshot paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-54-59 The physics of dancing peanuts in beer Royal Society Open Science The Royal Society.png"
+							alt="The physics of dancing peanuts in beer"
+							doi="10.1098/rsos.230376"
+						/>
+					</section>
+
+					<section
+						class="paper-stack-slide"
+					>
+						<img
+							class="paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-55-23 Freddie Mercury-acoustic analysis of speaking fundamental frequency vibrato and subharmonics Logopedics Phoniatrics Vocology Vol 42 No 1 - Get Access.png"
+							alt="Freddie Mercury: acoustic analysis of speaking fundamental frequency, vibrato, and subharmonics"
+						/>
+					</section>
+
+					<section
+						class="paper-stack-slide"
+					>
+						<img
+							class="paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-55-30 'Monkey yodels'-frequency jumps in New World monkey vocalizations greatly surpass human vocal register transitions Philosophical Transactions of the Royal Society B The Royal Society.png"
+							alt="Monkey yodels: frequency jumps in New World monkey vocalizations"
+						/>
+					</section>
+
+					<section
+						class="paper-stack-slide"
+					>
+						<img
+							class="paper-stack-source"
+							src="img/Screenshot 2026-08-11 at 15-55-36 Looks that kill Facial metrics and international conflict 1947-2010 Politics and the Life Sciences Cambridge Core.png"
+							alt="Looks that kill: facial metrics and international conflict, 1947-2010"
+						/>
+					</section>
 				</section>
 
 				<section class="paper-title-slide" data-title-crop="369,328,525,45">
@@ -527,6 +694,61 @@
 				},
 			};
 
+			const PaperStack = {
+				id: "paper-stack",
+
+				init(deck) {
+					const stacks = deck
+						.getRevealElement()
+						.querySelectorAll(".paper-stack-sequence");
+
+					for (const stack of stacks) {
+						const steps = [...stack.children].filter((child) =>
+							child.matches("section"),
+						);
+						const sources = steps.map((step) =>
+							step.querySelector(".paper-stack-source"),
+						);
+
+						if (sources.some((source) => !source)) {
+							throw new Error(
+								"Each paper stack slide requires a source image",
+							);
+						}
+
+						for (let stepIndex = 1; stepIndex < steps.length; stepIndex++) {
+							const canvas = document.createElement("div");
+							canvas.className = "paper-stack-canvas";
+
+							for (
+								let paperIndex = 0;
+								paperIndex <= stepIndex;
+								paperIndex++
+							) {
+								const paper = sources[paperIndex].cloneNode();
+								paper.className = "paper-stack-paper";
+								paper.dataset.stackPosition = String(paperIndex % 6);
+
+								if (stepIndex === 1 && paperIndex === 0) {
+									paper.classList.add("paper-stack-paper-first");
+								}
+
+								if (paperIndex === stepIndex) {
+									paper.classList.add("paper-stack-paper-new");
+								} else {
+									paper.alt = "";
+									paper.setAttribute("aria-hidden", "true");
+								}
+
+								canvas.append(paper);
+							}
+
+							steps[stepIndex].replaceChildren(canvas);
+						}
+					}
+				},
+			};
+
 			Reveal.initialize({
 				width: 1327,
 				height: 912,
@@ -537,7 +759,7 @@
 				hash: true,
 				transition: "none",
 				backgroundTransition: "none",
-				plugins: [PaperTitleMorph],
+				plugins: [PaperTitleMorph, PaperStack],
 			});
 		</script>
 	</body>
