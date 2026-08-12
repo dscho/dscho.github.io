@@ -32,6 +32,9 @@
       <path transform="translate(55 20) scale(1.25)"
             d="M 10.197491,8.5032996 L 10.197491,78.5033 L 20.197492,78.5033 L 20.197492,18.5033 L 80.197491,18.5033 L 80.197491,8.5032996 L 20.197492,8.5032996 L 10.197491,8.5032996 z M 30.197492,28.5033 L 30.197492,58.5033 L 40.197491,58.5033 L 40.197491,28.5033 L 30.197492,28.5033 z M 50.197491,28.5033 L 50.197491,68.5033 L 30.197492,68.5033 L 30.197492,78.5033 L 50.197491,78.5033 L 60.197491,78.5033 L 60.197491,28.5033 L 50.197491,28.5033 z M 70.197491,28.5033 L 70.197491,58.5033 L 80.197491,58.5033 L 80.197491,28.5033 L 70.197491,28.5033 z"/>
     </clipPath>
+    <clipPath id="i-screw-visible" clipPathUnits="userSpaceOnUse">
+      <rect x="99" y="45" width="8" height="10.7"/>
+    </clipPath>
     <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#fff" stop-opacity="0"/>
       <stop offset=".5" stop-color="#fff" stop-opacity=".7"/>
@@ -269,8 +272,8 @@
                                           dur=".8s" repeatCount="indefinite"/>
                         <path d="M-1-2.5H5V2.5H-1Z"
                               fill="#ef5f66" stroke="#4d5868" stroke-width="1"/>
-                        <path d="M5 0H13.2" stroke="#737d8c" stroke-width="1.2"/>
-                        <path d="M12.5-.8V.8" stroke="#4d5868" stroke-width=".8"/>
+                        <path d="M5 0H7.2" stroke="#737d8c" stroke-width="1.2"/>
+                        <path d="M6.8-.8V.8" stroke="#4d5868" stroke-width=".8"/>
                       </g>
                     </g>
                   </g>
@@ -305,18 +308,20 @@
                keyTimes="0;.36;.375;.5;.51;1"
                dur="16s" repeatCount="indefinite"/>
     </circle>
-    <g opacity="0" transform="translate(0 0)">
+    <g opacity="0" clip-path="url(#i-screw-visible)">
       <animate attributeName="opacity"
                values="0;0;1;1;0;0"
                keyTimes="0;.43;.4375;.6874;.6875;1"
                dur="16s" repeatCount="indefinite"/>
-      <animateTransform attributeName="transform" type="translate"
-                        values="0 -3;0 -3;0 0;0 3;0 3"
-                        keyTimes="0;.4375;.5;.6875;1"
-                        dur="16s" repeatCount="indefinite"/>
-      <path d="M103 55.6V59.1" stroke="#6f7885" stroke-width=".8"/>
-      <path d="M101.8 55.6H104.2 M102.2 55.2 103.8 56"
-            stroke="#d9e0e8" stroke-width=".7" stroke-linecap="round"/>
+      <g transform="translate(0 0)">
+        <animateTransform attributeName="transform" type="translate"
+                          values="0 0;0 0;0 0;0 3;0 3"
+                          keyTimes="0;.4375;.5;.6875;1"
+                          dur="16s" repeatCount="indefinite"/>
+        <path d="M103 52.6V55.6" stroke="#6f7885" stroke-width=".8"/>
+        <path d="M101.8 52.6H104.2 M102.2 52.2 103.8 53"
+              stroke="#d9e0e8" stroke-width=".7" stroke-linecap="round"/>
+      </g>
     </g>
   </g>
 
