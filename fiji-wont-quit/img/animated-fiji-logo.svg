@@ -311,7 +311,7 @@
                keyTimes="0;.43;.4375;.6874;.6875;1"
                dur="16s" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate"
-                        values="-5.5 4;-5.5 4;0 0;0 3;0 3"
+                        values="0 -3;0 -3;0 0;0 3;0 3"
                         keyTimes="0;.4375;.5;.6875;1"
                         dur="16s" repeatCount="indefinite"/>
       <path d="M103 55.6V59.1" stroke="#6f7885" stroke-width=".8"/>
@@ -490,6 +490,8 @@
     </g>
   </g>
 
+  <use href="#j-hammer-worker"/>
+
   <g id="sweeper-travel">
     <animateTransform attributeName="transform" type="translate"
                       values="0 0;70 0;0 0" keyTimes="0;.5;1"
@@ -654,6 +656,7 @@
     </g>
   </g>
 
+  <defs>
   <g id="j-hammer-worker" transform="translate(110 101) scale(.5)">
     <g fill="none" stroke="#364154" stroke-width="2.2"
        stroke-linecap="round" stroke-linejoin="round">
@@ -773,6 +776,7 @@
       </path>
     </g>
   </g>
+  </defs>
 
   <g id="top-travel" transform="translate(-36 0)">
     <animateTransform attributeName="transform" type="translate"
