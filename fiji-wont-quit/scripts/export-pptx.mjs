@@ -111,16 +111,25 @@ const groupShape = `
 		</a:xfrm>
 	</p:grpSpPr>`;
 
+const slidePictures = (slide, manifest) =>
+	slide.pictures || [
+		{
+			image: slide.image,
+			x: 0,
+			y: 0,
+			width: manifest.width,
+			height: manifest.height,
+		},
+		...(slide.overlays || []),
+	];
+
 const contentTypesXml = (slides) => {
 	const imageDefaults = [
 		...new Set(
 			slides
-				.flatMap((slide) => [
-					slide.image,
-					...(slide.overlays || []).map(({ image }) => image),
-				])
+				.flatMap((slide) => slidePictures(slide, { width: 0, height: 0 }))
 				.map((image) => {
-					const extension = extname(image).toLowerCase();
+					const extension = extname(image.image).toLowerCase();
 					const contentType = imageTypes.get(extension);
 					if (!contentType) {
 						throw new Error(`Unsupported slide image type: ${extension}`);
@@ -256,10 +265,22 @@ const presentationRelationshipsXml = (slides) => {
 </Relationships>`;
 };
 
-const pictureXml = ({ x, y, width, height }, index) => `
+const pictureXml = (
+	{
+		x,
+		y,
+		width,
+		height,
+		name = `Slide image ${index + 1}`,
+		rotate = 0,
+		border = 0,
+		shadow = false,
+	},
+	index,
+) => `
 			<p:pic>
 				<p:nvPicPr>
-					<p:cNvPr id="${index + 2}" name="Slide image ${index + 1}"/>
+					<p:cNvPr id="${index + 2}" name="${escapeXml(name)}"/>
 					<p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>
 					<p:nvPr/>
 				</p:nvPicPr>
@@ -268,13 +289,45 @@ const pictureXml = ({ x, y, width, height }, index) => `
 					<a:stretch><a:fillRect/></a:stretch>
 				</p:blipFill>
 				<p:spPr>
-					<a:xfrm>
+					<a:xfrm${rotate ? ` rot="${Math.round(rotate * 60000)}"` : ''}>
 						<a:off x="${Math.round(x * emusPerPixel)}" y="${Math.round(y * emusPerPixel)}"/>
 						<a:ext cx="${Math.round(width * emusPerPixel)}" cy="${Math.round(height * emusPerPixel)}"/>
 					</a:xfrm>
 					<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+					${
+						border
+							? `<a:ln w="${Math.round(border * emusPerPixel)}"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill></a:ln>`
+							: '<a:ln><a:noFill/></a:ln>'
+					}
+					${
+						shadow
+							? '<a:effectLst><a:outerShdw blurRad="400050" dist="190500" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha val="22000"/></a:srgbClr></a:outerShdw></a:effectLst>'
+							: ''
+					}
 				</p:spPr>
 			</p:pic>`;
+
+const veilXml = (veil, id) => {
+	if (!veil) return '';
+	return `
+			<p:sp>
+				<p:nvSpPr>
+					<p:cNvPr id="${id}" name="Animation veil"/>
+					<p:cNvSpPr/>
+					<p:nvPr/>
+				</p:nvSpPr>
+				<p:spPr>
+					<a:xfrm>
+						<a:off x="${Math.round(veil.x * emusPerPixel)}" y="${Math.round(veil.y * emusPerPixel)}"/>
+						<a:ext cx="${Math.round(veil.width * emusPerPixel)}" cy="${Math.round(veil.height * emusPerPixel)}"/>
+					</a:xfrm>
+					<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+					<a:solidFill><a:srgbClr val="000000"><a:alpha val="18000"/></a:srgbClr></a:solidFill>
+					<a:ln><a:noFill/></a:ln>
+				</p:spPr>
+				<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody>
+			</p:sp>`;
+};
 
 const doiPillXml = (slide, relationshipId, id) => {
 	if (!relationshipId || !slide.doiBounds) return '';
@@ -319,16 +372,192 @@ const doiPillXml = (slide, relationshipId, id) => {
 			</p:sp>`;
 };
 
+const fadeEffectXml = ({
+	direction,
+	shapeId,
+	parId,
+	setId,
+	effectId,
+	delay,
+	duration,
+}) => `
+				<p:par>
+					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect" grpId="${parId}" presetID="9" presetClass="${direction === 'in' ? 'entr' : 'exit'}" presetSubtype="0">
+						<p:stCondLst><p:cond delay="${delay}"/></p:stCondLst>
+						<p:childTnLst>
+							${
+								direction === 'in'
+									? `<p:set>
+								<p:cBhvr>
+									<p:cTn id="${setId}" dur="1" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn>
+									<p:tgtEl><p:spTgt spid="${shapeId}"/></p:tgtEl>
+									<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst>
+								</p:cBhvr>
+								<p:to><p:strVal val="visible"/></p:to>
+							</p:set>`
+									: ''
+							}
+							<p:animEffect transition="${direction}" filter="fade">
+								<p:cBhvr>
+									<p:cTn id="${effectId}" dur="${duration}"/>
+									<p:tgtEl><p:spTgt spid="${shapeId}"/></p:tgtEl>
+								</p:cBhvr>
+							</p:animEffect>
+							${
+								direction === 'out'
+									? `<p:set>
+								<p:cBhvr>
+									<p:cTn id="${setId}" dur="1" fill="hold"><p:stCondLst><p:cond delay="${Math.max(0, duration - 1)}"/></p:stCondLst></p:cTn>
+									<p:tgtEl><p:spTgt spid="${shapeId}"/></p:tgtEl>
+									<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst>
+								</p:cBhvr>
+								<p:to><p:strVal val="hidden"/></p:to>
+							</p:set>`
+									: ''
+							}
+						</p:childTnLst>
+					</p:cTn>
+				</p:par>`;
+
+const motionScaleEffectXml = ({
+	shapeId,
+	parId,
+	motionId,
+	scaleId,
+	delay,
+	duration,
+	deltaX,
+	deltaY,
+	scale,
+}) => `
+				<p:par>
+					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect" grpId="${parId}">
+						<p:stCondLst><p:cond delay="${delay}"/></p:stCondLst>
+						<p:iterate type="lt"><p:tmAbs val="0"/></p:iterate>
+						<p:childTnLst>
+							<p:animMotion origin="layout" path="M 0 0 L ${deltaX.toFixed(6)} ${deltaY.toFixed(6)} E" pathEditMode="relative">
+								<p:cBhvr>
+									<p:cTn id="${motionId}" dur="${duration}" fill="hold"/>
+									<p:tgtEl><p:spTgt spid="${shapeId}"/></p:tgtEl>
+								</p:cBhvr>
+							</p:animMotion>
+							<p:animScale>
+								<p:cBhvr>
+									<p:cTn id="${scaleId}" dur="${duration}" fill="hold"/>
+									<p:tgtEl><p:spTgt spid="${shapeId}"/></p:tgtEl>
+								</p:cBhvr>
+								<p:from x="100000" y="100000"/>
+								<p:to x="${Math.round(scale * 100000)}" y="${Math.round(scale * 100000)}"/>
+							</p:animScale>
+						</p:childTnLst>
+					</p:cTn>
+				</p:par>`;
+
+const timingXml = (slide, pictures, veilId) => {
+	if (!slide.nativeAnimation) return '';
+	const animation = slide.nativeAnimation;
+	const titleShapeId = animation.titlePictureIndex + 2;
+	const effects = [
+		fadeEffectXml({
+			direction: 'in',
+			shapeId: titleShapeId,
+			parId: 2,
+			setId: 3,
+			effectId: 4,
+			delay: animation.wait,
+			duration: animation.fade,
+		}),
+		fadeEffectXml({
+			direction: 'in',
+			shapeId: veilId,
+			parId: 5,
+			setId: 6,
+			effectId: 7,
+			delay: animation.wait,
+			duration: animation.fade,
+		}),
+		motionScaleEffectXml({
+			shapeId: titleShapeId,
+			parId: 8,
+			motionId: 9,
+			scaleId: 10,
+			delay: animation.moveDelay,
+			duration: animation.moveDuration,
+			deltaX: animation.deltaX,
+			deltaY: animation.deltaY,
+			scale: animation.scale,
+		}),
+		fadeEffectXml({
+			direction: 'out',
+			shapeId: veilId,
+			parId: 11,
+			setId: 12,
+			effectId: 13,
+			delay: animation.veilExitDelay,
+			duration: animation.veilExitDuration,
+		}),
+	].join('');
+
+	return `
+	<p:timing>
+		<p:tnLst>
+			<p:par>
+				<p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot">
+					<p:childTnLst>${effects}
+					</p:childTnLst>
+				</p:cTn>
+			</p:par>
+		</p:tnLst>
+		<p:bldLst>
+			<p:bldP spid="${titleShapeId}" grpId="2" animBg="1"/>
+			<p:bldP spid="${veilId}" grpId="5" animBg="1"/>
+			<p:bldP spid="${titleShapeId}" grpId="8" animBg="1"/>
+			<p:bldP spid="${veilId}" grpId="11" animBg="1"/>
+		</p:bldLst>
+	</p:timing>`;
+};
+
+const morphTransitionXml = (slide) =>
+	slide.morph
+		? `
+	<mc:AlternateContent>
+		<mc:Choice Requires="p14 p159">
+			<p:transition p14:dur="${slide.morphDuration || 1200}">
+				<p159:morph option="byObject"/>
+			</p:transition>
+		</mc:Choice>
+		<mc:Fallback>
+			<p:transition spd="slow"><p:fade/></p:transition>
+		</mc:Fallback>
+	</mc:AlternateContent>`
+		: '';
+
 const slideXml = (_, pictures, slide, relationships) => `${xmlDeclaration}
-<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" xmlns:p159="http://schemas.microsoft.com/office/powerpoint/2015/09/main" mc:Ignorable="p14 p159">
 	<p:cSld>
 		<p:spTree>
 			${groupShape}
-			${pictures.map(pictureXml).join('')}
-			${doiPillXml(slide, relationships.hyperlink, pictures.length + 2)}
+			${pictures
+				.map((picture, index) => ({ picture, index }))
+				.filter(({ picture }) => picture.role !== 'title')
+				.map(({ picture, index }) => pictureXml(picture, index))
+				.join('')}
+			${veilXml(slide.veil, pictures.length + 2)}
+			${pictures
+				.map((picture, index) => ({ picture, index }))
+				.filter(({ picture }) => picture.role === 'title')
+				.map(({ picture, index }) => pictureXml(picture, index))
+				.join('')}
+			${doiPillXml(
+				slide,
+				relationships.hyperlink,
+				pictures.length + 2 + (slide.veil ? 1 : 0),
+			)}
 		</p:spTree>
 	</p:cSld>
 	<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+	${morphTransitionXml(slide)}
+	${timingXml(slide, pictures, pictures.length + 2)}
 </p:sld>`;
 
 const slideRelationshipsXml = (
@@ -807,16 +1036,7 @@ const writePptx = async (manifest, output) => {
 
 		let mediaIndex = 1;
 		for (const [index, slide] of manifest.slides.entries()) {
-			const pictures = [
-				{
-					image: slide.image,
-					x: 0,
-					y: 0,
-					width: manifest.width,
-					height: manifest.height,
-				},
-				...(slide.overlays || []),
-			];
+			const pictures = slidePictures(slide, manifest);
 			const mediaNames = [];
 			for (const picture of pictures) {
 				const extension = extname(picture.image).toLowerCase();
