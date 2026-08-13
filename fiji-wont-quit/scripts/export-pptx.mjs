@@ -161,6 +161,9 @@ const contentTypesXml = (slides) => {
 	const notesMasterOverride = slides.some(({ notes }) => notes)
 		? '<Override PartName="/ppt/notesMasters/notesMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml"/>'
 		: '';
+	const notesThemeOverride = slides.some(({ notes }) => notes)
+		? '<Override PartName="/ppt/theme/theme2.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>'
+		: '';
 
 	return `${xmlDeclaration}
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -177,6 +180,7 @@ const contentTypesXml = (slides) => {
 	<Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/>
 	<Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
 	${notesMasterOverride}
+	${notesThemeOverride}
 	${slideOverrides}
 	${notesOverrides}
 </Types>`;
@@ -704,7 +708,7 @@ const notesMasterXml = `${xmlDeclaration}
 
 const notesMasterRelationshipsXml = `${xmlDeclaration}
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/>
+	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme2.xml"/>
 </Relationships>`;
 
 const notesSlideXml = (notes) => `${xmlDeclaration}
@@ -1186,6 +1190,7 @@ const writePptx = async (manifest, output) => {
 		await writePart(packageRoot, 'ppt/theme/theme1.xml', themeXml);
 		await mkdir(join(packageRoot, 'ppt/media'), { recursive: true });
 		if (manifest.slides.some(({ notes }) => notes)) {
+			await writePart(packageRoot, 'ppt/theme/theme2.xml', themeXml);
 			await writePart(
 				packageRoot,
 				'ppt/notesMasters/notesMaster1.xml',
