@@ -533,6 +533,10 @@ const timingXml = (slide, pictures, veilId) => {
 				</p:cTn>
 			</p:par>
 		</p:tnLst>
+		<p:bldLst>
+			<p:bldP spid="${veilId}" grpId="8" animBg="1"/>
+			<p:bldP spid="${veilId}" grpId="14" animBg="1"/>
+		</p:bldLst>
 	</p:timing>`;
 };
 
