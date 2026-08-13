@@ -859,7 +859,7 @@ const capturePaperTitle = async (page, slide, workspace, index) => {
 			wait: 1000,
 			fade: 1500,
 			moveDelay: 3520,
-			moveDuration: 2638,
+			moveDuration: 900,
 			deltaX: (finalCenter.x - initialCenter.x) / 1327,
 			deltaY: (finalCenter.y - initialCenter.y) / 912,
 			scale: geometry.titleFinal.width / geometry.titleInitial.width,
