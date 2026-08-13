@@ -382,8 +382,8 @@ const fadeEffectXml = ({
 	duration,
 }) => `
 				<p:par>
-					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect" grpId="${parId}" presetID="9" presetClass="${direction === 'in' ? 'entr' : 'exit'}" presetSubtype="0">
-						<p:stCondLst><p:cond evt="onBegin" delay="${delay}"/></p:stCondLst>
+					<p:cTn id="${parId}" presetID="10" presetClass="${direction === 'in' ? 'entr' : 'exit'}" presetSubtype="0" fill="hold" nodeType="withEffect">
+						<p:stCondLst><p:cond delay="${delay}"/></p:stCondLst>
 						<p:childTnLst>
 							${
 								direction === 'in'
@@ -431,8 +431,8 @@ const motionScaleEffectXml = ({
 	scale,
 }) => `
 				<p:par>
-					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect" grpId="${parId}">
-						<p:stCondLst><p:cond evt="onBegin" delay="${delay}"/></p:stCondLst>
+					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect">
+						<p:stCondLst><p:cond delay="${delay}"/></p:stCondLst>
 						<p:iterate type="lt"><p:tmAbs val="0"/></p:iterate>
 						<p:childTnLst>
 							<p:animMotion origin="layout" path="M 0 0 L ${deltaX.toFixed(6)} ${deltaY.toFixed(6)} E" pathEditMode="relative">
@@ -461,26 +461,26 @@ const timingXml = (slide, pictures, veilId) => {
 		fadeEffectXml({
 			direction: 'in',
 			shapeId: titleShapeId,
-			parId: 2,
-			setId: 3,
-			effectId: 4,
-			delay: animation.wait,
-			duration: animation.fade,
-		}),
-		fadeEffectXml({
-			direction: 'in',
-			shapeId: veilId,
 			parId: 5,
 			setId: 6,
 			effectId: 7,
 			delay: animation.wait,
 			duration: animation.fade,
 		}),
+		fadeEffectXml({
+			direction: 'in',
+			shapeId: veilId,
+			parId: 8,
+			setId: 9,
+			effectId: 10,
+			delay: animation.wait,
+			duration: animation.fade,
+		}),
 		motionScaleEffectXml({
 			shapeId: titleShapeId,
-			parId: 8,
-			motionId: 9,
-			scaleId: 10,
+			parId: 11,
+			motionId: 12,
+			scaleId: 13,
 			delay: animation.moveDelay,
 			duration: animation.moveDuration,
 			deltaX: animation.deltaX,
@@ -490,9 +490,9 @@ const timingXml = (slide, pictures, veilId) => {
 		fadeEffectXml({
 			direction: 'out',
 			shapeId: veilId,
-			parId: 11,
-			setId: 12,
-			effectId: 13,
+			parId: 14,
+			setId: 15,
+			effectId: 16,
 			delay: animation.veilExitDelay,
 			duration: animation.veilExitDuration,
 		}),
@@ -503,17 +503,36 @@ const timingXml = (slide, pictures, veilId) => {
 		<p:tnLst>
 			<p:par>
 				<p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot">
-					<p:childTnLst>${effects}
+					<p:childTnLst>
+						<p:seq concurrent="1" nextAc="seek">
+							<p:cTn id="2" dur="indefinite" nodeType="mainSeq">
+								<p:childTnLst>
+									<p:par>
+										<p:cTn id="3" fill="hold">
+											<p:stCondLst>
+												<p:cond delay="indefinite"/>
+												<p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond>
+											</p:stCondLst>
+											<p:childTnLst>
+												<p:par>
+													<p:cTn id="4" fill="hold">
+														<p:stCondLst><p:cond delay="0"/></p:stCondLst>
+														<p:childTnLst>${effects}
+														</p:childTnLst>
+													</p:cTn>
+												</p:par>
+											</p:childTnLst>
+										</p:cTn>
+									</p:par>
+								</p:childTnLst>
+							</p:cTn>
+							<p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>
+							<p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst>
+						</p:seq>
 					</p:childTnLst>
 				</p:cTn>
 			</p:par>
 		</p:tnLst>
-		<p:bldLst>
-			<p:bldP spid="${titleShapeId}" grpId="2" animBg="1"/>
-			<p:bldP spid="${veilId}" grpId="5" animBg="1"/>
-			<p:bldP spid="${titleShapeId}" grpId="8" animBg="1"/>
-			<p:bldP spid="${veilId}" grpId="11" animBg="1"/>
-		</p:bldLst>
 	</p:timing>`;
 };
 
