@@ -96,6 +96,15 @@ const writePart = async (packageRoot, name, contents) => {
 	await writeFile(path, `${contents.trim()}\n`);
 };
 
+const writeDataUrl = async (path, dataUrl) => {
+	const marker = ';base64,';
+	const offset = dataUrl.indexOf(marker);
+	if (offset < 0) {
+		throw new Error('Expected a base64 data URL');
+	}
+	await writeFile(path, Buffer.from(dataUrl.slice(offset + marker.length), 'base64'));
+};
+
 const groupShape = `
 	<p:nvGrpSpPr>
 		<p:cNvPr id="1" name=""/>
@@ -271,7 +280,7 @@ const pictureXml = (
 		y,
 		width,
 		height,
-		name = `Slide image ${index + 1}`,
+		name,
 		rotate = 0,
 		border = 0,
 		shadow = false,
@@ -280,7 +289,7 @@ const pictureXml = (
 ) => `
 			<p:pic>
 				<p:nvPicPr>
-					<p:cNvPr id="${index + 2}" name="${escapeXml(name)}"/>
+					<p:cNvPr id="${index + 2}" name="${escapeXml(name || `Slide image ${index + 1}`)}"/>
 					<p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>
 					<p:nvPr/>
 				</p:nvPicPr>
@@ -767,61 +776,222 @@ const viewPropsXml = `${xmlDeclaration}
 const tableStylesXml = `${xmlDeclaration}
 <a:tblStyleLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" def="{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}"/>`;
 
-const encodeGif = async (frames, fps, output) => {
-	await run('ffmpeg', [
-		'-y',
-		'-hide_banner',
-		'-loglevel',
-		'error',
-		'-framerate',
-		String(fps),
-		'-i',
-		join(frames, 'frame-%04d.png'),
-		'-filter_complex',
-		'[0:v]split[frames][palette];[palette]palettegen=max_colors=256:stats_mode=diff[colors];[frames][colors]paletteuse=dither=sierra2_4a',
-		'-loop',
-		'-1',
-		'-final_delay',
-		'100',
-		output,
-	]);
+const capturePaperTitle = async (page, slide, workspace, index) => {
+	const geometry = await page.evaluate(() => {
+		const current = Reveal.getCurrentSlide();
+		const screenshot = current.querySelector('.paper-screenshot');
+		const frame = current.querySelector('.paper-title-source-frame');
+		const canvas = frame.querySelector('.paper-title-raster');
+		const veil = current.querySelector('.paper-title-veil');
+		const slideRect = current.getBoundingClientRect();
+		const finalRect = frame.getBoundingClientRect();
+		const scale = screenshot.offsetHeight / screenshot.naturalHeight;
+		const imageWidth = screenshot.naturalWidth * scale;
+		const imageHeight = screenshot.naturalHeight * scale;
+
+		return {
+			source: decodeURIComponent(new URL(screenshot.currentSrc).pathname).replace(
+				/^\/+/,
+				'',
+			),
+			image: {
+				x:
+					screenshot.offsetLeft +
+					(screenshot.offsetWidth - imageWidth) / 2,
+				y:
+					screenshot.offsetTop +
+					(screenshot.offsetHeight - imageHeight) / 2,
+				width: imageWidth,
+				height: imageHeight,
+			},
+			titleInitial: {
+				x: Number.parseFloat(frame.style.left),
+				y: Number.parseFloat(frame.style.top),
+				width: Number.parseFloat(frame.style.width),
+				height: Number.parseFloat(frame.style.height),
+			},
+			titleFinal: {
+				x: finalRect.left - slideRect.left,
+				y: finalRect.top - slideRect.top,
+				width: finalRect.width,
+				height: finalRect.height,
+			},
+			veil: {
+				x: Number.parseFloat(veil.style.left),
+				y: Number.parseFloat(veil.style.top),
+				width: Number.parseFloat(veil.style.width),
+				height: Number.parseFloat(veil.style.height),
+			},
+			titleData: canvas.toDataURL('image/png'),
+		};
+	});
+	const titleImage = join(workspace, `slide-${index + 1}-title.png`);
+	await writeDataUrl(titleImage, geometry.titleData);
+	const initialCenter = {
+		x: geometry.titleInitial.x + geometry.titleInitial.width / 2,
+		y: geometry.titleInitial.y + geometry.titleInitial.height / 2,
+	};
+	const finalCenter = {
+		x: geometry.titleFinal.x + geometry.titleFinal.width / 2,
+		y: geometry.titleFinal.y + geometry.titleFinal.height / 2,
+	};
+	const stackName = Number.isInteger(slide.stackIndex);
+
+	return {
+		...slide,
+		pictures: [
+			{
+				image: resolve(root, geometry.source),
+				...geometry.image,
+				name: stackName ? '!!paper-0' : 'Paper screenshot',
+			},
+			{
+				image: titleImage,
+				...geometry.titleInitial,
+				name: stackName ? '!!title-0' : 'Paper title',
+				role: 'title',
+			},
+		],
+		veil: geometry.veil,
+		nativeAnimation: {
+			titlePictureIndex: 1,
+			wait: 1000,
+			fade: 1500,
+			moveDelay: 3520,
+			moveDuration: 2638,
+			deltaX: (finalCenter.x - initialCenter.x) / 1327,
+			deltaY: (finalCenter.y - initialCenter.y) / 912,
+			scale: geometry.titleFinal.width / geometry.titleInitial.width,
+			veilExitDelay: 6003,
+			veilExitDuration: 5277,
+		},
+		morph: stackName,
+		morphDuration: stackName ? 1400 : undefined,
+	};
 };
 
-const captureFrames = async (page, slide, directory, fps) => {
-	const interval = 1000 / fps;
-	const maximum = slide.titleAnimation ? 14000 : 3500;
-	const minimum = slide.titleAnimation ? 1000 : 1400;
-	const started = Date.now();
-	let frame = 0;
-
-	while (true) {
-		const target = started + frame * interval;
-		await delay(Math.max(0, target - Date.now()));
-		await page.screenshot({
-			path: join(directory, `frame-${String(frame).padStart(4, '0')}.png`),
+const capturePaperStack = async (page, slide, workspace, index) => {
+	const geometry = await page.evaluate(() => {
+		const current = Reveal.getCurrentSlide();
+		const slideWidth = current.offsetWidth;
+		const slideHeight = current.offsetHeight;
+		const value = (style, name) =>
+			Number.parseFloat(style.getPropertyValue(name)) || 0;
+		const papers = [
+			...current.querySelectorAll(
+				'.paper-stack-paper:not(.paper-stack-paper-returning):not(.paper-stack-paper-return-base)',
+			),
+		].map((paper) => {
+			const style = getComputedStyle(paper);
+			const scale = value(style, '--paper-scale');
+			const width = paper.offsetWidth * scale;
+			const height = paper.offsetHeight * scale;
+			return {
+				source: decodeURIComponent(new URL(paper.currentSrc).pathname).replace(
+					/^\/+/,
+					'',
+				),
+				x: (slideWidth - width) / 2 + value(style, '--paper-x'),
+				y: (slideHeight - height) / 2 + value(style, '--paper-y'),
+				width,
+				height,
+				rotate: value(style, '--paper-rotation'),
+			};
 		});
-
-		const elapsed = Date.now() - started;
-		const settled = await page.evaluate(() => {
-			const current = Reveal.getCurrentSlide();
-			if (current.classList.contains('paper-title-slide')) {
-				return current.dataset.paperTitleState === 'complete';
-			}
-			const animations = current.getAnimations({ subtree: true });
-			return (
-				animations.length > 0 &&
-				animations.every((animation) => animation.playState === 'finished')
-			);
+		const titles = [
+			...current.querySelectorAll(
+				'.paper-stack-title:not(.paper-stack-title-returning)',
+			),
+		].map((title) => {
+			const style = getComputedStyle(title);
+			const width = title.offsetWidth;
+			const height = title.offsetHeight;
+			return {
+				x: (slideWidth - width) / 2 + value(style, '--title-x'),
+				y: 8 + value(style, '--title-y'),
+				width,
+				height,
+				rotate: value(style, '--title-rotation'),
+				data: title
+					.querySelector('.paper-title-raster')
+					.toDataURL('image/png'),
+			};
 		});
-		if (elapsed >= minimum && settled) break;
-		if (elapsed >= maximum) {
-			throw new Error(`Slide ${slide.h}/${slide.v} did not settle`);
-		}
-		frame++;
+		return { papers, titles };
+	});
+	const pictures = geometry.papers.map((paper, paperIndex) => ({
+		image: resolve(root, paper.source),
+		...paper,
+		name: `!!paper-${paperIndex}`,
+		border: 8,
+		shadow: true,
+	}));
+	for (const [titleIndex, title] of geometry.titles.entries()) {
+		const titleImage = join(
+			workspace,
+			`slide-${index + 1}-title-${titleIndex}.png`,
+		);
+		await writeDataUrl(titleImage, title.data);
+		pictures.push({
+			image: titleImage,
+			x: title.x,
+			y: title.y,
+			width: title.width,
+			height: title.height,
+			rotate: title.rotate,
+			name: `!!title-${titleIndex}`,
+			role: 'title',
+			shadow: titleIndex > 0,
+		});
+	}
+
+	return {
+		...slide,
+		pictures,
+		morph: true,
+		morphDuration: slide.stackIndex === 1 ? 1400 : 1200,
+	};
+};
+
+const addStackEntrances = (slides) => {
+	const stack = slides
+		.filter(({ stackIndex }) => Number.isInteger(stackIndex))
+		.sort((a, b) => a.stackIndex - b.stackIndex);
+
+	for (let index = 0; index + 1 < stack.length; index++) {
+		const current = stack[index];
+		const nextIndex = index + 1;
+		const next = stack[nextIndex];
+		const paper = next.pictures.find(
+			({ name }) => name === `!!paper-${nextIndex}`,
+		);
+		const title = next.pictures.find(
+			({ name }) => name === `!!title-${nextIndex}`,
+		);
+		const paperWidth = 1327 * 0.68;
+		const paperHeight = 912 * 0.68;
+		current.pictures.push({
+			...paper,
+			x: (1327 - paperWidth) / 2 + 1100,
+			y: (912 - paperHeight) / 2 + 800,
+			width: paperWidth,
+			height: paperHeight,
+			rotate: 8,
+		});
+		const titleWidth = title.width * 0.75;
+		const titleHeight = title.height * 0.75;
+		current.pictures.push({
+			...title,
+			x: (1327 - titleWidth) / 2 + 1050,
+			y: 828,
+			width: titleWidth,
+			height: titleHeight,
+			rotate: 8,
+		});
 	}
 };
 
-const capturePresentation = async ({ fps, limit, workspace }) => {
+const capturePresentation = async ({ limit, workspace }) => {
 	const { server, url } = await startServer();
 	const browser = await puppeteer.launch({
 		headless: true,
@@ -846,6 +1016,7 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 			return slides.map((slide) => {
 				const source = slide.querySelector(':scope > img[doi]');
 				return {
+					source: source?.getAttribute('src') || '',
 					doi: source?.getAttribute('doi') || '',
 					notes: slide.querySelector(':scope > aside.notes')?.innerText.trim() || '',
 					title:
@@ -859,6 +1030,9 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 
 		const page = await browser.newPage();
 		await page.setViewport({ width: 1327, height: 912, deviceScaleFactor: 1 });
+		await page.emulateMediaFeatures([
+			{ name: 'prefers-reduced-motion', value: 'reduce' },
+		]);
 		page.on('pageerror', (error) => errors.push(error.message));
 		await page.goto(url, { waitUntil: 'networkidle0' });
 		await page.waitForFunction(() => window.Reveal?.isReady());
@@ -877,16 +1051,23 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 				const { h, v } = Reveal.getIndices(slide);
 				const assetAnimation = slide.querySelector('.fiji-title-logo');
 				const titleAnimation = slide.classList.contains('paper-title-slide');
+				const stack = slide.parentElement.classList.contains(
+					'paper-stack-sequence',
+				);
+				const stackIndex = stack
+					? [...slide.parentElement.children].indexOf(slide)
+					: null;
 				return {
 					h,
 					v: v ?? 0,
 					captureMode: assetAnimation
-						? 'overlay-gif'
-						: titleAnimation ||
-							  slide.parentElement.classList.contains('paper-stack-sequence')
-							? 'animated'
+						? 'static'
+						: stackIndex > 0
+							? 'paper-stack'
+							: titleAnimation
+								? 'paper-title'
 							: 'static',
-					titleAnimation,
+					stackIndex,
 				};
 			}),
 		}));
@@ -981,16 +1162,13 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 				continue;
 			}
 
-			const frames = join(workspace, `slide-${index + 1}-frames`);
-			const gif = join(workspace, `slide-${index + 1}.gif`);
-			await mkdir(frames, { recursive: true });
-			console.log(
-				`Capturing slide ${index + 1}/${selected.length}: ${slide.title}`,
-			);
-			await captureFrames(page, slide, frames, fps);
-			await encodeGif(frames, fps, gif);
-			slides.push({ ...slide, image: gif });
+			if (slide.captureMode === 'paper-title') {
+				slides.push(await capturePaperTitle(page, slide, workspace, index));
+			} else {
+				slides.push(await capturePaperStack(page, slide, workspace, index));
+			}
 		}
+		addStackEntrances(slides);
 
 		if (errors.length) {
 			throw new Error(errors.join('\n'));
