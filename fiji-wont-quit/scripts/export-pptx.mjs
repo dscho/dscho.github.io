@@ -322,7 +322,7 @@ const veilXml = (veil, id) => {
 						<a:ext cx="${Math.round(veil.width * emusPerPixel)}" cy="${Math.round(veil.height * emusPerPixel)}"/>
 					</a:xfrm>
 					<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
-					<a:solidFill><a:srgbClr val="000000"><a:alpha val="18000"/></a:srgbClr></a:solidFill>
+					<a:solidFill><a:srgbClr val="000000"><a:alpha val="40000"/></a:srgbClr></a:solidFill>
 					<a:ln><a:noFill/></a:ln>
 				</p:spPr>
 				<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody>
