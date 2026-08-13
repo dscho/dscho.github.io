@@ -28,6 +28,53 @@
 				text-align: left;
 			}
 
+			.reveal .slides section.fiji-title-slide {
+				display: flex !important;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
+				height: 100%;
+				box-sizing: border-box;
+				padding: 30px 48px 18px;
+				text-align: center;
+			}
+
+			.reveal .fiji-title-logo {
+				width: 64%;
+				max-width: none;
+				max-height: 68%;
+				margin: 16px 0 0;
+				border: 0;
+				background: transparent;
+				box-shadow: none;
+				object-fit: contain;
+			}
+
+			.reveal .fiji-title-slide h1 {
+				max-width: 880px;
+				margin: 0;
+				color: #20252b;
+				font-family:
+					Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+				font-size: 0.92em;
+				font-weight: 700;
+				letter-spacing: -0.015em;
+				line-height: 1.12;
+				text-transform: none;
+				text-shadow: none;
+			}
+
+			.reveal .fiji-title-author {
+				margin: 8px 0 0;
+				color: #5c6269;
+				font-family:
+					Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+				font-size: 0.5em;
+				font-style: italic;
+				font-weight: 400;
+				letter-spacing: 0.025em;
+			}
+
 			.reveal .slides section.paper-title-slide {
 				height: 100%;
 				padding: 0;
@@ -444,6 +491,19 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
+				<section class="fiji-title-slide">
+					<h1>
+						Fiji Won't Quit:<br />
+						Scientific Infrastructure Is a Team Sport
+					</h1>
+					<p class="fiji-title-author">Johannes Schindelin</p>
+					<img
+						class="fiji-title-logo"
+						src="img/animated-fiji-logo.svg"
+						alt="Animated Fiji logo maintained by a team of small workers"
+					/>
+				</section>
+
 				<section
 					class="paper-title-slide"
 					data-title-crop="21,275,53,39"
