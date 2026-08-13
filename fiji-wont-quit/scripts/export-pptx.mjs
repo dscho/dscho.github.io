@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { basename, dirname, extname, join, resolve } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 
@@ -52,9 +52,6 @@ const run = (command, args, options = {}) =>
 			}
 		});
 	});
-
-const delay = (milliseconds) =>
-	new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 
 const startServer = async () => {
 	const server = createServer(async (request, response) => {
@@ -1049,7 +1046,6 @@ const capturePresentation = async ({ limit, workspace }) => {
 			title: document.title,
 			slides: Reveal.getSlides().map((slide) => {
 				const { h, v } = Reveal.getIndices(slide);
-				const assetAnimation = slide.querySelector('.fiji-title-logo');
 				const titleAnimation = slide.classList.contains('paper-title-slide');
 				const stack = slide.parentElement.classList.contains(
 					'paper-stack-sequence',
@@ -1060,9 +1056,8 @@ const capturePresentation = async ({ limit, workspace }) => {
 				return {
 					h,
 					v: v ?? 0,
-					captureMode: assetAnimation
-						? 'static'
-						: stackIndex > 0
+					captureMode:
+						stackIndex > 0
 							? 'paper-stack'
 							: titleAnimation
 								? 'paper-title'
@@ -1122,38 +1117,6 @@ const capturePresentation = async ({ limit, workspace }) => {
 					height: bounds.height,
 				};
 			});
-
-			if (slide.captureMode === 'overlay-gif') {
-				const overlay = await page.evaluate(() => {
-					const logo = Reveal.getCurrentSlide().querySelector('.fiji-title-logo');
-					const bounds = logo.getBoundingClientRect();
-					logo.style.visibility = 'hidden';
-					return {
-						x: bounds.x,
-						y: bounds.y,
-						width: bounds.width,
-						height: bounds.height,
-					};
-				});
-				const background = join(workspace, `slide-${index + 1}.png`);
-				await page.screenshot({ path: background });
-				await page.evaluate(() => {
-					Reveal.getCurrentSlide().querySelector(
-						'.fiji-title-logo',
-					).style.visibility = '';
-				});
-				slides.push({
-					...slide,
-					image: background,
-					overlays: [
-						{
-							image: join(root, 'img/animated-fiji-logo.gif'),
-							...overlay,
-						},
-					],
-				});
-				continue;
-			}
 
 			if (slide.captureMode === 'static') {
 				const image = join(workspace, `slide-${index + 1}.png`);
@@ -1306,25 +1269,18 @@ const writePptx = async (manifest, output) => {
 
 const parseOptions = (args) => {
 	const options = {
-		fps: 10,
 		limit: Number.POSITIVE_INFINITY,
 		output: 'fiji-wont-quit.pptx',
 	};
 
 	for (let index = 0; index < args.length; index++) {
 		switch (args[index]) {
-			case '--fps':
-				options.fps = Number(args[++index]);
-				break;
 			case '--limit':
 				options.limit = Number(args[++index]);
 				break;
 			default:
 				options.output = args[index];
 		}
-	}
-	if (!Number.isFinite(options.fps) || options.fps <= 0) {
-		throw new Error('FPS must be a positive number');
 	}
 	if (
 		options.limit !== Number.POSITIVE_INFINITY &&
