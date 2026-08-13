@@ -114,14 +114,19 @@ const groupShape = `
 const contentTypesXml = (slides) => {
 	const imageDefaults = [
 		...new Set(
-			slides.flatMap((slide) => [slide.image, ...(slide.overlays || []).map(({ image }) => image)]).map((image) => {
-				const extension = extname(image).toLowerCase();
-				const contentType = imageTypes.get(extension);
-				if (!contentType) {
-					throw new Error(`Unsupported slide image type: ${extension}`);
-				}
-				return `<Default Extension="${extension.slice(1)}" ContentType="${contentType}"/>`;
-			}),
+			slides
+				.flatMap((slide) => [
+					slide.image,
+					...(slide.overlays || []).map(({ image }) => image),
+				])
+				.map((image) => {
+					const extension = extname(image).toLowerCase();
+					const contentType = imageTypes.get(extension);
+					if (!contentType) {
+						throw new Error(`Unsupported slide image type: ${extension}`);
+					}
+					return `<Default Extension="${extension.slice(1)}" ContentType="${contentType}"/>`;
+				}),
 		),
 	].join('\n\t');
 	const slideOverrides = slides
@@ -130,6 +135,17 @@ const contentTypesXml = (slides) => {
 				`<Override PartName="/ppt/slides/slide${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`,
 		)
 		.join('\n\t');
+	const notesOverrides = slides
+		.map((slide, index) =>
+			slide.notes
+				? `<Override PartName="/ppt/notesSlides/notesSlide${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml"/>`
+				: '',
+		)
+		.filter(Boolean)
+		.join('\n\t');
+	const notesMasterOverride = slides.some(({ notes }) => notes)
+		? '<Override PartName="/ppt/notesMasters/notesMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml"/>'
+		: '';
 
 	return `${xmlDeclaration}
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -145,7 +161,9 @@ const contentTypesXml = (slides) => {
 	<Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/>
 	<Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/>
 	<Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
+	${notesMasterOverride}
 	${slideOverrides}
+	${notesOverrides}
 </Types>`;
 };
 
@@ -156,12 +174,12 @@ const rootRelationshipsXml = `${xmlDeclaration}
 	<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
 </Relationships>`;
 
-const appXml = (slideCount) => `${xmlDeclaration}
+const appXml = (slides) => `${xmlDeclaration}
 <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
 	<Application>Fiji PPTX exporter</Application>
 	<PresentationFormat>Custom</PresentationFormat>
-	<Slides>${slideCount}</Slides>
-	<Notes>0</Notes>
+	<Slides>${slides.length}</Slides>
+	<Notes>${slides.filter(({ notes }) => notes).length}</Notes>
 	<HiddenSlides>0</HiddenSlides>
 	<MMClips>0</MMClips>
 	<ScaleCrop>false</ScaleCrop>
@@ -191,12 +209,18 @@ const presentationXml = ({ width, height, slides }) => {
 				`<p:sldId id="${256 + index}" r:id="rId${index + 2}"/>`,
 		)
 		.join('\n\t\t');
+	const notesMasterId = slides.some(({ notes }) => notes)
+		? `<p:notesMasterIdLst>
+		<p:notesMasterId r:id="rId${slides.length + 5}"/>
+	</p:notesMasterIdLst>`
+		: '';
 
 	return `${xmlDeclaration}
 <p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
 	<p:sldMasterIdLst>
 		<p:sldMasterId id="2147483648" r:id="rId1"/>
 	</p:sldMasterIdLst>
+	${notesMasterId}
 	<p:sldIdLst>
 		${slideIds}
 	</p:sldIdLst>
@@ -209,21 +233,26 @@ const presentationXml = ({ width, height, slides }) => {
 </p:presentation>`;
 };
 
-const presentationRelationshipsXml = (slideCount) => {
-	const slides = Array.from(
+const presentationRelationshipsXml = (slides) => {
+	const slideCount = slides.length;
+	const slideRelationships = Array.from(
 		{ length: slideCount },
 		(_, index) =>
 			`<Relationship Id="rId${index + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${index + 1}.xml"/>`,
 	).join('\n\t');
 	const nextId = slideCount + 2;
+	const notesMasterRelationship = slides.some(({ notes }) => notes)
+		? `<Relationship Id="rId${nextId + 3}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster" Target="notesMasters/notesMaster1.xml"/>`
+		: '';
 
 	return `${xmlDeclaration}
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>
-	${slides}
+	${slideRelationships}
 	<Relationship Id="rId${nextId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps" Target="presProps.xml"/>
 	<Relationship Id="rId${nextId + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps" Target="viewProps.xml"/>
 	<Relationship Id="rId${nextId + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles" Target="tableStyles.xml"/>
+	${notesMasterRelationship}
 </Relationships>`;
 };
 
@@ -247,18 +276,67 @@ const pictureXml = ({ x, y, width, height }, index) => `
 				</p:spPr>
 			</p:pic>`;
 
-const slideXml = (_, pictures) => `${xmlDeclaration}
+const doiPillXml = (slide, relationshipId, id) => {
+	if (!relationshipId || !slide.doiBounds) return '';
+	const { x, y, width, height } = slide.doiBounds;
+	return `
+			<p:sp>
+				<p:nvSpPr>
+					<p:cNvPr id="${id}" name="DOI: ${escapeXml(slide.doi)}">
+						<a:hlinkClick r:id="${relationshipId}" tooltip="DOI: ${escapeXml(slide.doi)}"/>
+					</p:cNvPr>
+					<p:cNvSpPr/>
+					<p:nvPr/>
+				</p:nvSpPr>
+				<p:spPr>
+					<a:xfrm>
+						<a:off x="${Math.round(x * emusPerPixel)}" y="${Math.round(y * emusPerPixel)}"/>
+						<a:ext cx="${Math.round(width * emusPerPixel)}" cy="${Math.round(height * emusPerPixel)}"/>
+					</a:xfrm>
+					<a:prstGeom prst="roundRect"><a:avLst/></a:prstGeom>
+					<a:solidFill><a:srgbClr val="FFFFFF"><a:alpha val="92000"/></a:srgbClr></a:solidFill>
+					<a:ln w="9525">
+						<a:solidFill><a:srgbClr val="000000"><a:alpha val="14000"/></a:srgbClr></a:solidFill>
+					</a:ln>
+					<a:effectLst>
+						<a:outerShdw blurRad="171450" dist="47625" dir="5400000" algn="ctr" rotWithShape="0">
+							<a:srgbClr val="000000"><a:alpha val="16000"/></a:srgbClr>
+						</a:outerShdw>
+					</a:effectLst>
+				</p:spPr>
+				<p:txBody>
+					<a:bodyPr lIns="133350" rIns="133350" tIns="76200" bIns="76200" anchor="ctr"/>
+					<a:lstStyle/>
+					<a:p>
+						<a:pPr algn="ctr"/>
+						<a:r>
+							<a:rPr lang="en-US" sz="1200" b="0"/>
+							<a:t>DOI: ${escapeXml(slide.doi)}</a:t>
+						</a:r>
+						<a:endParaRPr lang="en-US" sz="1200"/>
+					</a:p>
+				</p:txBody>
+			</p:sp>`;
+};
+
+const slideXml = (_, pictures, slide, relationships) => `${xmlDeclaration}
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
 	<p:cSld>
 		<p:spTree>
 			${groupShape}
 			${pictures.map(pictureXml).join('')}
+			${doiPillXml(slide, relationships.hyperlink, pictures.length + 2)}
 		</p:spTree>
 	</p:cSld>
 	<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
 </p:sld>`;
 
-const slideRelationshipsXml = (mediaNames) => `${xmlDeclaration}
+const slideRelationshipsXml = (
+	mediaNames,
+	slide,
+	slideIndex,
+	relationships,
+) => `${xmlDeclaration}
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>
 	${mediaNames
@@ -267,6 +345,16 @@ const slideRelationshipsXml = (mediaNames) => `${xmlDeclaration}
 				`<Relationship Id="rId${index + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/${escapeXml(name)}"/>`,
 		)
 		.join('\n\t')}
+	${
+		relationships.hyperlink
+			? `<Relationship Id="${relationships.hyperlink}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://doi.org/${escapeXml(slide.doi)}" TargetMode="External"/>`
+			: ''
+	}
+	${
+		relationships.notes
+			? `<Relationship Id="${relationships.notes}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide" Target="../notesSlides/notesSlide${slideIndex + 1}.xml"/>`
+			: ''
+	}
 </Relationships>`;
 
 const slideMasterXml = `${xmlDeclaration}
@@ -302,6 +390,80 @@ const slideLayoutXml = `${xmlDeclaration}
 const slideLayoutRelationshipsXml = `${xmlDeclaration}
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/>
+</Relationships>`;
+
+const notesBodyShape = (text = '') => {
+	const paragraphs = text
+		.split(/\n+/)
+		.map((line) => line.trim())
+		.filter(Boolean)
+		.map(
+			(line) => `
+					<a:p>
+						<a:r>
+							<a:rPr lang="en-US" sz="1200"/>
+							<a:t>${escapeXml(line)}</a:t>
+						</a:r>
+						<a:endParaRPr lang="en-US" sz="1200"/>
+					</a:p>`,
+		)
+		.join('');
+	return `
+			<p:sp>
+				<p:nvSpPr>
+					<p:cNvPr id="2" name="Notes Placeholder 2"/>
+					<p:cNvSpPr txBox="1"/>
+					<p:nvPr><p:ph type="body" idx="1"/></p:nvPr>
+				</p:nvSpPr>
+				<p:spPr>
+					<a:xfrm>
+						<a:off x="685800" y="3657600"/>
+						<a:ext cx="5486400" cy="4114800"/>
+					</a:xfrm>
+				</p:spPr>
+				<p:txBody>
+					<a:bodyPr lIns="91440" rIns="91440" tIns="45720" bIns="45720"/>
+					<a:lstStyle/>
+					${paragraphs || '<a:p><a:endParaRPr lang="en-US" sz="1200"/></a:p>'}
+				</p:txBody>
+			</p:sp>`;
+};
+
+const notesMasterXml = `${xmlDeclaration}
+<p:notesMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+	<p:cSld>
+		<p:spTree>
+			${groupShape}
+			${notesBodyShape()}
+		</p:spTree>
+	</p:cSld>
+	<p:clrMap accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" bg1="lt1" bg2="lt2" folHlink="folHlink" hlink="hlink" tx1="dk1" tx2="dk2"/>
+	<p:hf hdr="0" ftr="0" dt="0" sldNum="0"/>
+	<p:notesStyle>
+		<a:lvl1pPr marL="0" algn="l"><a:defRPr sz="1200"/></a:lvl1pPr>
+	</p:notesStyle>
+</p:notesMaster>`;
+
+const notesMasterRelationshipsXml = `${xmlDeclaration}
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/>
+</Relationships>`;
+
+const notesSlideXml = (notes) => `${xmlDeclaration}
+<p:notes xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+	<p:cSld>
+		<p:spTree>
+			${groupShape}
+			${notesBodyShape(notes)}
+		</p:spTree>
+	</p:cSld>
+	<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:notes>`;
+
+const notesSlideRelationshipsXml = (slideIndex) => `${xmlDeclaration}
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster" Target="../notesMasters/notesMaster1.xml"/>
+	<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="../slides/slide${slideIndex + 1}.xml"/>
 </Relationships>`;
 
 const themeXml = `${xmlDeclaration}
@@ -416,6 +578,33 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 
 	try {
 		const errors = [];
+		const metadataPage = await browser.newPage();
+		await metadataPage.setJavaScriptEnabled(false);
+		await metadataPage.goto(url, { waitUntil: 'domcontentloaded' });
+		const metadata = await metadataPage.evaluate(() => {
+			const topLevel = [
+				...document.querySelector('.slides').children,
+			].filter((element) => element.matches('section'));
+			const slides = topLevel.flatMap((section) => {
+				const vertical = [...section.children].filter((element) =>
+					element.matches('section'),
+				);
+				return vertical.length ? vertical : [section];
+			});
+			return slides.map((slide) => {
+				const source = slide.querySelector(':scope > img[doi]');
+				return {
+					doi: source?.getAttribute('doi') || '',
+					notes: slide.querySelector(':scope > aside.notes')?.innerText.trim() || '',
+					title:
+						source?.alt ||
+						slide.querySelector(':scope > h1')?.innerText.replaceAll('\n', ' ') ||
+						'Untitled slide',
+				};
+			});
+		});
+		await metadataPage.close();
+
 		const page = await browser.newPage();
 		await page.setViewport({ width: 1327, height: 912, deviceScaleFactor: 1 });
 		page.on('pageerror', (error) => errors.push(error.message));
@@ -426,28 +615,19 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 				(image) => image.complete && image.naturalWidth > 0,
 			),
 		);
+		await page.addStyleTag({
+			content: '.paper-doi-link { visibility: hidden !important; }',
+		});
 
 		const presentation = await page.evaluate(() => ({
 			title: document.title,
 			slides: Reveal.getSlides().map((slide) => {
 				const { h, v } = Reveal.getIndices(slide);
-				const source = slide.querySelector(
-					'.paper-screenshot[doi], .paper-stack-paper-new[doi]',
-				);
-				const notesHtml = Reveal.getSlideNotes(slide) || '';
-				const notesContainer = document.createElement('div');
-				notesContainer.innerHTML = notesHtml;
 				const assetAnimation = slide.querySelector('.fiji-title-logo');
 				const titleAnimation = slide.classList.contains('paper-title-slide');
 				return {
 					h,
 					v: v ?? 0,
-					doi: source?.getAttribute('doi') || '',
-					notes: notesContainer.innerText.trim(),
-					title:
-						source?.alt ||
-						slide.querySelector('h1')?.innerText.replaceAll('\n', ' ') ||
-						`Slide ${h}/${v ?? 0}`,
 					captureMode: assetAnimation
 						? 'overlay-gif'
 						: titleAnimation ||
@@ -457,6 +637,15 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 					titleAnimation,
 				};
 			}),
+		}));
+		if (presentation.slides.length !== metadata.length) {
+			throw new Error(
+				`Slide metadata mismatch: ${presentation.slides.length} rendered, ${metadata.length} source slides`,
+			);
+		}
+		presentation.slides = presentation.slides.map((slide, index) => ({
+			...metadata[index],
+			...slide,
 		}));
 		const selected = Number.isFinite(limit)
 			? presentation.slides.slice(0, limit)
@@ -489,6 +678,17 @@ const capturePresentation = async ({ fps, limit, workspace }) => {
 						requestAnimationFrame(() => requestAnimationFrame(resolvePromise)),
 					),
 			);
+			slide.doiBounds = await page.evaluate(() => {
+				const link = Reveal.getCurrentSlide().querySelector('.paper-doi-link');
+				if (!link) return null;
+				const bounds = link.getBoundingClientRect();
+				return {
+					x: bounds.x,
+					y: bounds.y,
+					width: bounds.width,
+					height: bounds.height,
+				};
+			});
 
 			if (slide.captureMode === 'overlay-gif') {
 				const overlay = await page.evaluate(() => {
@@ -563,7 +763,7 @@ const writePptx = async (manifest, output) => {
 	try {
 		await writePart(packageRoot, '[Content_Types].xml', contentTypesXml(manifest.slides));
 		await writePart(packageRoot, '_rels/.rels', rootRelationshipsXml);
-		await writePart(packageRoot, 'docProps/app.xml', appXml(manifest.slides.length));
+		await writePart(packageRoot, 'docProps/app.xml', appXml(manifest.slides));
 		await writePart(
 			packageRoot,
 			'docProps/core.xml',
@@ -573,7 +773,7 @@ const writePptx = async (manifest, output) => {
 		await writePart(
 			packageRoot,
 			'ppt/_rels/presentation.xml.rels',
-			presentationRelationshipsXml(manifest.slides.length),
+			presentationRelationshipsXml(manifest.slides),
 		);
 		await writePart(packageRoot, 'ppt/presProps.xml', presPropsXml);
 		await writePart(packageRoot, 'ppt/viewProps.xml', viewPropsXml);
@@ -592,6 +792,18 @@ const writePptx = async (manifest, output) => {
 		);
 		await writePart(packageRoot, 'ppt/theme/theme1.xml', themeXml);
 		await mkdir(join(packageRoot, 'ppt/media'), { recursive: true });
+		if (manifest.slides.some(({ notes }) => notes)) {
+			await writePart(
+				packageRoot,
+				'ppt/notesMasters/notesMaster1.xml',
+				notesMasterXml,
+			);
+			await writePart(
+				packageRoot,
+				'ppt/notesMasters/_rels/notesMaster1.xml.rels',
+				notesMasterRelationshipsXml,
+			);
+		}
 
 		let mediaIndex = 1;
 		for (const [index, slide] of manifest.slides.entries()) {
@@ -615,16 +827,36 @@ const writePptx = async (manifest, output) => {
 				);
 				mediaNames.push(mediaName);
 			}
+			let nextRelationshipId = mediaNames.length + 2;
+			const relationships = {};
+			if (slide.doi && slide.doiBounds) {
+				relationships.hyperlink = `rId${nextRelationshipId++}`;
+			}
+			if (slide.notes) {
+				relationships.notes = `rId${nextRelationshipId++}`;
+			}
 			await writePart(
 				packageRoot,
 				`ppt/slides/slide${index + 1}.xml`,
-				slideXml(manifest, pictures),
+				slideXml(manifest, pictures, slide, relationships),
 			);
 			await writePart(
 				packageRoot,
 				`ppt/slides/_rels/slide${index + 1}.xml.rels`,
-				slideRelationshipsXml(mediaNames),
+				slideRelationshipsXml(mediaNames, slide, index, relationships),
 			);
+			if (slide.notes) {
+				await writePart(
+					packageRoot,
+					`ppt/notesSlides/notesSlide${index + 1}.xml`,
+					notesSlideXml(slide.notes),
+				);
+				await writePart(
+					packageRoot,
+					`ppt/notesSlides/_rels/notesSlide${index + 1}.xml.rels`,
+					notesSlideRelationshipsXml(index),
+				);
+			}
 		}
 
 		await rm(output, { force: true });
