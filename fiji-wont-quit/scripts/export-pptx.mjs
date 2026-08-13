@@ -383,7 +383,7 @@ const fadeEffectXml = ({
 }) => `
 				<p:par>
 					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect" grpId="${parId}" presetID="9" presetClass="${direction === 'in' ? 'entr' : 'exit'}" presetSubtype="0">
-						<p:stCondLst><p:cond delay="${delay}"/></p:stCondLst>
+						<p:stCondLst><p:cond evt="onBegin" delay="${delay}"/></p:stCondLst>
 						<p:childTnLst>
 							${
 								direction === 'in'
@@ -432,7 +432,7 @@ const motionScaleEffectXml = ({
 }) => `
 				<p:par>
 					<p:cTn id="${parId}" dur="${duration}" fill="hold" nodeType="withEffect" grpId="${parId}">
-						<p:stCondLst><p:cond delay="${delay}"/></p:stCondLst>
+						<p:stCondLst><p:cond evt="onBegin" delay="${delay}"/></p:stCondLst>
 						<p:iterate type="lt"><p:tmAbs val="0"/></p:iterate>
 						<p:childTnLst>
 							<p:animMotion origin="layout" path="M 0 0 L ${deltaX.toFixed(6)} ${deltaY.toFixed(6)} E" pathEditMode="relative">
