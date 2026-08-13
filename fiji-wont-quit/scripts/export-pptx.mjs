@@ -1050,6 +1050,7 @@ const capturePresentation = async ({ limit, workspace }) => {
 			title: document.title,
 			slides: Reveal.getSlides().map((slide) => {
 				const { h, v } = Reveal.getIndices(slide);
+				const animatedLogo = slide.querySelector('.fiji-title-logo');
 				const titleAnimation = slide.classList.contains('paper-title-slide');
 				const stack = slide.parentElement.classList.contains(
 					'paper-stack-sequence',
@@ -1061,7 +1062,9 @@ const capturePresentation = async ({ limit, workspace }) => {
 					h,
 					v: v ?? 0,
 					captureMode:
-						stackIndex > 0
+						animatedLogo
+							? 'overlay-gif'
+							: stackIndex > 0
 							? 'paper-stack'
 							: titleAnimation
 								? 'paper-title'
@@ -1121,6 +1124,33 @@ const capturePresentation = async ({ limit, workspace }) => {
 					height: bounds.height,
 				};
 			});
+
+			if (slide.captureMode === 'overlay-gif') {
+				const overlay = await page.evaluate(() => {
+					const logo = Reveal.getCurrentSlide().querySelector('.fiji-title-logo');
+					const bounds = logo.getBoundingClientRect();
+					logo.style.visibility = 'hidden';
+					return {
+						x: bounds.x,
+						y: bounds.y,
+						width: bounds.width,
+						height: bounds.height,
+					};
+				});
+				const background = join(workspace, `slide-${index + 1}.png`);
+				await page.screenshot({ path: background });
+				slides.push({
+					...slide,
+					image: background,
+					overlays: [
+						{
+							image: join(root, 'img/animated-fiji-logo.gif'),
+							...overlay,
+						},
+					],
+				});
+				continue;
+			}
 
 			if (slide.captureMode === 'static') {
 				const image = join(workspace, `slide-${index + 1}.png`);
@@ -1306,6 +1336,7 @@ if (args[0] === '--manifest') {
 	const options = parseOptions(args);
 	const workspace = await mkdtemp(join(tmpdir(), 'fiji-pptx-capture-'));
 	try {
+		await run('npm', ['run', 'export:animated-fiji-logo'], { cwd: root });
 		const manifest = await capturePresentation({ ...options, workspace });
 		await writePptx(manifest, resolve(options.output));
 	} finally {
