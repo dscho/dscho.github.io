@@ -79,7 +79,6 @@
 		"export:animated-fiji-logo": "node scripts/export-animated-svg.js img/animated-fiji-logo.svg img/animated-fiji-logo.gif img/animated-fiji-logo.gif-cues.json",
 		"test": "node scripts/test.js",
 		"react:build": "npm run --prefix react build",
-		"react:demo": "npm run --prefix react demo",
 		"react:test": "npm run --prefix react test"
 	},
 	"author": {

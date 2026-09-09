@@ -26,8 +26,7 @@
 		"prepack": "npm run build",
 		"build": "vite build",
 		"test": "vitest run",
-		"test:watch": "vitest",
-		"demo": "npm run --prefix demo dev"
+		"test:watch": "vitest"
 	},
 	"peerDependencies": {
 		"react": ">=18",

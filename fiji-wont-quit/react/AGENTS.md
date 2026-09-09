@@ -12,7 +12,6 @@ This directory contains the `@revealjs/react` wrapper. Keep the guidance here hi
 - The Reveal instance context lives in `react/src/reveal-context.ts`.
 - Component tests are colocated with their components as `*.test.tsx`.
 - Test setup remains in `react/src/__tests__/setup.ts`.
-- The demo app lives in `react/demo/src/`.
 
 ## Source Of Truth
 
