@@ -35,7 +35,7 @@ export default class Multilingualization {
             "dict-24": "File name",
             "error-1": "The number of characters is over. Please keep it within 600 characters.",
             "error-2": "Could not copy the URL.",
-            "error-3": "Could not compress the file.",
+            "error-3": "Could not create the ZIP file.",
             "success-1": "Copied the URL to the clipboard.",
         },
         "ja": {
@@ -65,7 +65,7 @@ export default class Multilingualization {
             "dict-24": "ファイル名",
             "error-1": "文字数がオーバーしています。600文字以内でお願いします。",
             "error-2": "URLをコピーできませんでした。",
-            "error-3": "ファイルを圧縮できませんでした。",
+            "error-3": "ZIPファイルを作成できませんでした。",
             "success-1": "URLをクリップボードにコピーしました。",
         }
     }

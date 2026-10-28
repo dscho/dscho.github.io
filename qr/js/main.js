@@ -58,13 +58,58 @@ window.onload = () => {
 
             case "file":
                 try {
-                    const fileName = encodeURIComponent(_$("file_name").value)
-                        .replace(/[()]/g, char => `%${char.charCodeAt(0).toString(16)}`);
-                    const stream = new Blob([_$("file_contents").value]).stream()
-                        .pipeThrough(new CompressionStream("deflate"));
-                    const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
-                    const base64 = btoa(Array.from(bytes, byte => String.fromCharCode(byte)).join(""));
-                    source = `data:application/zlib;name=${fileName};base64,${base64}`;
+                    if (!_$("file_name").reportValidity()) {
+                        return;
+                    }
+                    const fileName = new TextEncoder().encode(_$("file_name").value);
+                    const contents = new TextEncoder().encode(_$("file_contents").value);
+                    const stream = new Blob([contents]).stream()
+                        .pipeThrough(new CompressionStream("deflate-raw"));
+                    const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
+                    const method = compressed.length < contents.length ? 8 : 0;
+                    const data = method === 8 ? compressed : contents;
+                    let crc = 0xffffffff;
+                    for (const byte of contents) {
+                        crc ^= byte;
+                        for (let bit = 0; bit < 8; bit++) {
+                            crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+                        }
+                    }
+                    crc = (crc ^ 0xffffffff) >>> 0;
+
+                    const directoryOffset = 30 + fileName.length + data.length;
+                    const endOffset = directoryOffset + 46 + fileName.length;
+                    const zip = new Uint8Array(endOffset + 22);
+                    const header = new DataView(zip.buffer);
+
+                    // ZIP local header.
+                    header.setUint32(0, 0x04034b50, true);
+                    header.setUint16(4, 20, true);
+                    header.setUint16(6, 0x0800, true);
+                    header.setUint16(8, method, true);
+                    header.setUint16(12, 0x0021, true);
+                    header.setUint32(14, crc, true);
+                    header.setUint32(18, data.length, true);
+                    header.setUint32(22, contents.length, true);
+                    header.setUint16(26, fileName.length, true);
+                    zip.set(fileName, 30);
+                    zip.set(data, 30 + fileName.length);
+
+                    // Central directory shares the local header's file metadata.
+                    header.setUint32(directoryOffset, 0x02014b50, true);
+                    header.setUint16(directoryOffset + 4, 20, true);
+                    zip.set(zip.subarray(4, 30), directoryOffset + 6);
+                    zip.set(fileName, directoryOffset + 46);
+
+                    // End of central directory.
+                    header.setUint32(endOffset, 0x06054b50, true);
+                    header.setUint16(endOffset + 8, 1, true);
+                    header.setUint16(endOffset + 10, 1, true);
+                    header.setUint32(endOffset + 12, 46 + fileName.length, true);
+                    header.setUint32(endOffset + 16, directoryOffset, true);
+
+                    const base64 = btoa(Array.from(zip, byte => String.fromCharCode(byte)).join(""));
+                    source = `data:application/zip;base64,${base64}`;
                 } catch (e) {
                     $("#QRCode").html("").append(lang.translate("error-3"));
                     return;
