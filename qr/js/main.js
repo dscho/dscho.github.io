@@ -32,7 +32,7 @@ async function copyUrlWithValues() {
 
 // After drawing the screen, perform the initial setup.
 window.onload = () => {
-    _$("btnGen").addEventListener("click", e => {
+    _$("btnGen").addEventListener("click", async e => {
         const size = 200; // QR Code image size (both portrait and landscape)
         let source = "";
 
@@ -54,6 +54,21 @@ window.onload = () => {
 
             case "vcard":
                 source = encode(generateVcard());
+                break
+
+            case "file":
+                try {
+                    const fileName = encodeURIComponent(_$("file_name").value)
+                        .replace(/[()]/g, char => `%${char.charCodeAt(0).toString(16)}`);
+                    const stream = new Blob([_$("file_contents").value]).stream()
+                        .pipeThrough(new CompressionStream("deflate"));
+                    const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+                    const base64 = btoa(Array.from(bytes, byte => String.fromCharCode(byte)).join(""));
+                    source = `data:application/zlib;name=${fileName};base64,${base64}`;
+                } catch (e) {
+                    $("#QRCode").html("").append(lang.translate("error-3"));
+                    return;
+                }
                 break
         }
         console.log(source)

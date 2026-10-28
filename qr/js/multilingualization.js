@@ -31,8 +31,11 @@ export default class Multilingualization {
             "dict-20": "URL Copy",
             "dict-21": "Address",
             "dict-22": "Postal code",
+            "dict-23": "File",
+            "dict-24": "File name",
             "error-1": "The number of characters is over. Please keep it within 600 characters.",
             "error-2": "Could not copy the URL.",
+            "error-3": "Could not compress the file.",
             "success-1": "Copied the URL to the clipboard.",
         },
         "ja": {
@@ -58,8 +61,11 @@ export default class Multilingualization {
             "dict-20": "URLコピー",
             "dict-21": "住所",
             "dict-22": "郵便番号",
+            "dict-23": "ファイル",
+            "dict-24": "ファイル名",
             "error-1": "文字数がオーバーしています。600文字以内でお願いします。",
             "error-2": "URLをコピーできませんでした。",
+            "error-3": "ファイルを圧縮できませんでした。",
             "success-1": "URLをクリップボードにコピーしました。",
         }
     }
