@@ -61,6 +61,7 @@ window.onload = () => {
                     if (!_$("file_name").reportValidity()) {
                         return;
                     }
+                    const archiveName = `${_$("file_name").value}.zip`;
                     const fileName = new TextEncoder().encode(_$("file_name").value);
                     const contents = new TextEncoder().encode(_$("file_contents").value);
                     const stream = new Blob([contents]).stream()
@@ -109,7 +110,9 @@ window.onload = () => {
                     header.setUint32(endOffset + 16, directoryOffset, true);
 
                     const base64 = btoa(Array.from(zip, byte => String.fromCharCode(byte)).join(""));
-                    source = `data:application/zip;base64,${base64}`;
+                    const downloadUrl = new URL("dl/", location.href);
+                    downloadUrl.hash = `${encodeURIComponent(archiveName)},${base64}`;
+                    source = downloadUrl.href;
                 } catch (e) {
                     $("#QRCode").html("").append(lang.translate("error-3"));
                     return;

@@ -1,6 +1,18 @@
+import lang from "./multilingualization.js";
 import "./common.js";
 
 window.onload = () => {
+    if (location.hash.includes(",")) {
+        const [fileName, zip] = location.hash.slice(1).split(",");
+        const link = _$("download_file");
+        link.href = `data:application/zip;base64,${zip}`;
+        link.download = decodeURIComponent(fileName);
+        link.textContent = `${lang.translate("dict-25")}: ${link.download}`;
+        link.hidden = false;
+        document.title = `${lang.translate("dict-25")} - QR code Generator`;
+        return;
+    }
+
     // Initialized by URL parameter
     const obj = getUrlParams();
 
